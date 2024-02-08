@@ -5,7 +5,7 @@ const scheduleSchema = mongoose.Schema({
     lessons: [{
         day: { type: String, required: true },
         daysOfWeek: [{ type: String, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] }],
-    }],
+    }]
 })
 
 const Schedule = mongoose.model('Schedule', scheduleSchema)
