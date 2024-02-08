@@ -43,8 +43,7 @@ exports.createClass = async (req, res) => {
 
     try {
         const newClass = await new Class({
-            name,
-
+            name
         })
         await newClass.save()
         res.json({newClass})
@@ -52,16 +51,7 @@ exports.createClass = async (req, res) => {
         console.log(err)
     }
 }
-exports.deleteClass = async (req, res) => {
-    const classId = req.params.id
 
-    try {
-        const deletedClass = await Class.findByIdAndDelete(classId)
-        res.json({deletedClass})
-    } catch (err) {
-        console.log(err)
-    }
-}
 exports.getClasses = async (req, res) => {
     try {
         const classes = await Class.find({})
@@ -70,6 +60,7 @@ exports.getClasses = async (req, res) => {
         console.log(err)
     }
 }
+
 exports.getClassById = async (req, res) => {
     const classId = req.params.id
 
@@ -80,15 +71,18 @@ exports.getClassById = async (req, res) => {
         console.log(err)
     }
 }
+
 exports.addStudentsToClass = async (req, res) => {
-    const classId = req.params.id
+    const teacherId = req.params.id
+    const classId = req.params.classId
     const studentIds = req.body
 
     try {
+        const checkTeacher = await Class.find({teacher: teacherId})
         const classInfo = await Class.findById(classId)
-        if (!classInfo) {
-            return res.json({message: "Class not found"})
-        }
+
+        if (!checkTeacher) return res.json({message: "Not same teacher"})
+        if (!classInfo) return res.json({message: "Class not found"})
 
         for (const studentId of studentIds) {
             const student = await Student.findById(studentId)

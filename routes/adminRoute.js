@@ -17,4 +17,7 @@ router.get('/student/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getS
 router.post('/student/add/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.addStudent)
 router.get('/students', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getStudents)
 
+router.get('/class/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getClassById)
+router.get('/classes', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getClasses)
+
 module.exports = router

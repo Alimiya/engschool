@@ -1,6 +1,8 @@
+const bcrypt = require("bcryptjs")
 const Student = require('../models/studentModel')
 const Manager = require('../models/managerModel')
 const Teacher = require('../models/teacherModel')
+const Class = require('../models/classModel')
 
 exports.getManager = async (req, res) => {
     try {
@@ -139,3 +141,21 @@ exports.deleteStudent = async (req, res) => {
     }
 }
 
+exports.getClasses = async (req, res) => {
+    try {
+        const classes = await Class.find({})
+        res.json({classes})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.getClassById = async (req, res) => {
+    const classId = req.params.id
+    try {
+        const classInfo = await Class.findById(classId)
+        res.json({classInfo})
+    } catch (err) {
+        console.log(err)
+    }
+}

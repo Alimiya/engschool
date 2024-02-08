@@ -28,12 +28,14 @@ const renderRoute = require('./routes/renderRoute')
 const studentRoute = require('./routes/studentRoute')
 const teacherRoute = require('./routes/teacherRoute')
 const managerRoute = require('./routes/managerRoute')
+const scheduleRoute = require('./routes/scheduleRoute')
 
 app.use('/api/admin', adminRoute)
 app.use('/api/auth', authRoute)
 app.use('/api/manager', managerRoute)
 app.use('/api/student', studentRoute)
 app.use('/api/teacher', teacherRoute)
+app.use('/api/schedule', scheduleRoute)
 app.use(renderRoute)
 
 const start = async () => {

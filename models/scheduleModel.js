@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
 const scheduleSchema = mongoose.Schema({
+    year:{type:'Number', required:true},
     month: { type: String, required: true },
     lessons: [{
         day: { type: String, required: true },
