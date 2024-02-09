@@ -2,7 +2,20 @@ const Class = require("../models/classModel")
 
 exports.getClasses = async (req, res) => {
     try {
-        const classes = await Class.find({})
+        const classes = await Class.find({}).populate([
+            {
+                path: 'teacher',
+                select: ['name', 'surname', 'lastname']
+            },
+            {
+                path: 'schedule',
+                select: ['year', 'month', 'lessons']
+            },
+            {
+                path: 'students',
+                select: ['name', 'surname', 'lastname', 'attendance']
+            }
+        ])
         res.json({classes})
     } catch (err) {
         console.log(err)
