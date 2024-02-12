@@ -8,6 +8,7 @@ const classScheduleSchema = mongoose.Schema({
         days: [[Number]],
         daysOfWeek: [String]
     },
+    selectedLessonDays: [{ type: String }],
     lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }]
 })
 

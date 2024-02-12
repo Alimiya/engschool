@@ -9,7 +9,7 @@ exports.getClasses = async (req, res) => {
             },
             {
                 path: 'schedule',
-                select: ['year', 'month', 'lessons']
+                select: ['year', 'month', 'calendar', 'lessons']
             },
             {
                 path: 'students',

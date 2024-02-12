@@ -2,7 +2,7 @@ const Schedule = require('../models/scheduleModel')
 const {generateMonthCalendar} = require('../middlewares/calendar')
 
 exports.createSchedule = async (req, res) => {
-    const { year, month } = req.body
+    const { year, month, holidays } = req.body
 
     try {
         const monthCalendar = generateMonthCalendar(year, month)
@@ -10,6 +10,7 @@ exports.createSchedule = async (req, res) => {
         const newSchedule = new Schedule({
             year: year,
             month: month,
+            holidays: holidays,
             calendar: monthCalendar
         })
 

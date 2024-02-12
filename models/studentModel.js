@@ -6,6 +6,7 @@ const studentSchema = mongoose.Schema({
     lastname: { type: String, required: true },
     username: { type: String },
     password: { type: String },
+    blocked:{type:Boolean,default:false},
     role: { type: String, default: 'student'},
     status:{type:String ,enum:['created','added'], default:'created'},
     class:{type:mongoose.Schema.Types.ObjectId, ref:'Class'},

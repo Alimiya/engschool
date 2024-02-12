@@ -67,7 +67,7 @@ exports.getClassById = async (req, res) => {
     const classId = req.params.id
 
     try {
-        const classInfo = await Class.findById(classId)
+        const classInfo = await Class.findById(classId).populate('schedule')
         res.json({classInfo})
     } catch (err) {
         console.log(err)
@@ -83,15 +83,15 @@ exports.addStudentsToClass = async (req, res) => {
         const checkTeacher = await Class.find({teacher: teacherId})
         const classInfo = await Class.findById(classId)
 
-        const studentsExist = await Student.find({ _id: { $in: studentIds } })
+        const studentsExist = await Student.find({_id: {$in: studentIds}})
         const studentsWithCreatedStatus = studentsExist.filter(student => student.status === 'created')
 
         if (!checkTeacher) return res.json({message: "Not same teacher"})
         if (!classInfo) return res.json({message: "Class not found"})
-        if (studentsExist.length !== studentIds.length) return res.json({ error: 'Student or students not found' })
-        if (studentsWithCreatedStatus.length > 0) return res.json({ message: 'Student or students not added' })
+        if (studentsExist.length !== studentIds.length) return res.json({error: 'Student or students not found'})
+        if (studentsWithCreatedStatus.length > 0) return res.json({message: 'Student or students not added'})
 
-        await Class.findByIdAndUpdate(classId, { $addToSet: { students: { $each: studentIds } } })
+        await Class.findByIdAndUpdate(classId, {$addToSet: {students: {$each: studentIds}}})
 
         return res.json({classInfo})
     } catch (err) {

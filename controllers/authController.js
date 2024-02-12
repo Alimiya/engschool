@@ -19,11 +19,12 @@ exports.login = async (req, res) => {
         let token
 
         user = await Admin.findOne({username})
+        userId = user._id
         if (user) {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
                 token = generateAdminToken(user)
-                return handleLoginSuccess(res, token, 'admin')
+                return handleLoginSuccess(res, token, 'admin', userId)
             }
         }
 
@@ -32,7 +33,7 @@ exports.login = async (req, res) => {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
                 token = generateManagerToken(user)
-                return handleLoginSuccess(res, token, 'manager')
+                return handleLoginSuccess(res, token, 'manager', userId)
             }
         }
 
@@ -41,7 +42,7 @@ exports.login = async (req, res) => {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
                 token = generateTeacherToken(user)
-                return handleLoginSuccess(res, token, 'teacher')
+                return handleLoginSuccess(res, token, 'teacher', userId)
             }
         }
 
@@ -50,7 +51,7 @@ exports.login = async (req, res) => {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
                 token = generateStudentToken(user)
-                return handleLoginSuccess(res, token, 'student')
+                return handleLoginSuccess(res, token, 'student', userId)
             }
         }
 
@@ -61,10 +62,10 @@ exports.login = async (req, res) => {
     }
 }
 
-function handleLoginSuccess(res, token, role) {
+function handleLoginSuccess(res, token, role, userId) {
     res.cookie(role, token, {maxAge: process.env.TOKEN_EXPIRE * 100000})
     res.header('Authorization', `Bearer ${token}`)
-    return res.json({token})
+    res.redirect(`/profile/${role}/${userId}`)
 }
 
 exports.logout = async (req, res) => {
@@ -73,7 +74,7 @@ exports.logout = async (req, res) => {
         res.clearCookie('manager')
         res.clearCookie('teacher')
         res.clearCookie('student')
-        res.json({message:"logouted"})
+        res.json({message: "logouted"})
     } catch (err) {
         console.log(err)
     }

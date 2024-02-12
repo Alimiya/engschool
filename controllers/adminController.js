@@ -4,10 +4,10 @@ const Manager = require('../models/managerModel')
 const Teacher = require('../models/teacherModel')
 const Class = require('../models/classModel')
 
-exports.getManager = async (req, res) => {
+exports.getManagers = async (req, res) => {
     try {
-        const manager = await Manager.find({})
-        res.json({manager})
+        const managers = await Manager.find({})
+        res.json({managers})
     } catch (err) {
         console.log(err)
     }
@@ -34,6 +34,76 @@ exports.createManager = async (req, res) => {
         })
         await newUser.save()
         res.json({newUser})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.blockManager = async (req, res) => {
+    const managerId = req.params.id
+    try {
+        const manager = await Manager.findByIdAndUpdate(managerId, { blocked: true }, { new: true })
+        if (!manager) res.json({message:'Manager not found'})
+        res.redirect(req.get('referer'))
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.unblockManager = async (req, res) => {
+    const managerId = req.params.id
+    try {
+        const manager = await Manager.findByIdAndUpdate(managerId, { blocked: false }, { new: true })
+        if (!manager) res.json({message:'Manager not found'})
+        res.redirect(req.get('referer'))
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.blockTeacher = async (req, res) => {
+    const teacherId = req.params.id
+    try {
+        const teacher = await Teacher.findByIdAndUpdate(teacherId, { blocked: true }, { new: true })
+        if (!teacher) res.json({message:'Teacher not found'})
+        res.redirect(req.get('referer'))
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.unblockTeacher = async (req, res) => {
+    const teacherId = req.params.id
+    try {
+        const teacher = await Teacher.findByIdAndUpdate(teacherId, { blocked: false }, { new: true })
+        if (!teacher) res.json({message:'Teacher not found'})
+        res.redirect(req.get('referer'))
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.blockStudent = async (req, res) => {
+    const studentId = req.params.id
+    try {
+        const student = await Student.findByIdAndUpdate(studentId, { blocked: true }, { new: true })
+        if (!student) res.json({message:'Student not found'})
+        res.redirect(req.get('referer'))
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.unblockStudent = async (req, res) => {
+    const studentId = req.params.id
+    try {
+        const student = await Student.findByIdAndUpdate(studentId, { blocked: false }, { new: true })
+        if (!student) res.json({message:'Student not found'})
+        res.redirect(req.get('referer'))
     } catch (err) {
         console.log(err)
     }
@@ -130,20 +200,11 @@ exports.addStudent = async (req, res) => {
     }
 }
 
-exports.deleteStudent = async (req, res) => {
-    const studentId = req.params.id
-    try {
-        const user = await Student.findByIdAndDelete(studentId)
-        if (!user) return res.json({message: "Student not found"})
-        res.json({user})
-    } catch (err) {
-        console.log(err)
-    }
-}
-
 exports.getClasses = async (req, res) => {
     try {
-        const classes = await Class.find({})
+        const classes = await Class.find({}).populate({
+            path:'students',
+        })
         res.json({classes})
     } catch (err) {
         console.log(err)
