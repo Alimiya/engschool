@@ -50,6 +50,9 @@
             <option value="non-paid">Non-paid</option>
         </select>
     </div>
+        <button class="btn btn-primary mt-2" onclick="window.location.href='/admin/manager/create'">Create Manager</button>
+        <button class="btn btn-primary mt-2" onclick="window.location.href='/admin/teacher/create'">Create Teacher</button>
+        <button class="btn btn-primary mt-2" onclick="window.location.href='/admin/student/add/:id'">Add Student</button>
 </div>
 <div class="container mt-4">
     <div class="scrollable-table-wrapper">
@@ -190,7 +193,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-
 
 
         getManagers()
