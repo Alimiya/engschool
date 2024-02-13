@@ -8,6 +8,7 @@ const managerSchema = mongoose.Schema({
     password: { type: String, required: true },
     blocked:{type:Boolean,default:false},
     role: { type: String, default: 'manager'},
+    classes:[{type:mongoose.Schema.Types.ObjectId,ref:'Class'}],
 })
 
 const Manager = mongoose.model('Manager', managerSchema)

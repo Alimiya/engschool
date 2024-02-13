@@ -13,6 +13,16 @@ exports.getManagers = async (req, res) => {
     }
 }
 
+exports.getManagerById = async (req, res) => {
+    const managerId = req.params.id
+    try {
+        const manager = await Manager.findOne(managerId)
+        res.json({manager})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 exports.createManager = async (req, res) => {
     const {name, surname, lastname, username, password} = req.body
 
@@ -42,8 +52,8 @@ exports.createManager = async (req, res) => {
 exports.blockManager = async (req, res) => {
     const managerId = req.params.id
     try {
-        const manager = await Manager.findByIdAndUpdate(managerId, { blocked: true }, { new: true })
-        if (!manager) res.json({message:'Manager not found'})
+        const manager = await Manager.findByIdAndUpdate(managerId, {blocked: true}, {new: true})
+        if (!manager) res.json({message: 'Manager not found'})
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -54,8 +64,8 @@ exports.blockManager = async (req, res) => {
 exports.unblockManager = async (req, res) => {
     const managerId = req.params.id
     try {
-        const manager = await Manager.findByIdAndUpdate(managerId, { blocked: false }, { new: true })
-        if (!manager) res.json({message:'Manager not found'})
+        const manager = await Manager.findByIdAndUpdate(managerId, {blocked: false}, {new: true})
+        if (!manager) res.json({message: 'Manager not found'})
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -66,8 +76,8 @@ exports.unblockManager = async (req, res) => {
 exports.blockTeacher = async (req, res) => {
     const teacherId = req.params.id
     try {
-        const teacher = await Teacher.findByIdAndUpdate(teacherId, { blocked: true }, { new: true })
-        if (!teacher) res.json({message:'Teacher not found'})
+        const teacher = await Teacher.findByIdAndUpdate(teacherId, {blocked: true}, {new: true})
+        if (!teacher) res.json({message: 'Teacher not found'})
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -78,8 +88,8 @@ exports.blockTeacher = async (req, res) => {
 exports.unblockTeacher = async (req, res) => {
     const teacherId = req.params.id
     try {
-        const teacher = await Teacher.findByIdAndUpdate(teacherId, { blocked: false }, { new: true })
-        if (!teacher) res.json({message:'Teacher not found'})
+        const teacher = await Teacher.findByIdAndUpdate(teacherId, {blocked: false}, {new: true})
+        if (!teacher) res.json({message: 'Teacher not found'})
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -90,8 +100,8 @@ exports.unblockTeacher = async (req, res) => {
 exports.blockStudent = async (req, res) => {
     const studentId = req.params.id
     try {
-        const student = await Student.findByIdAndUpdate(studentId, { blocked: true }, { new: true })
-        if (!student) res.json({message:'Student not found'})
+        const student = await Student.findByIdAndUpdate(studentId, {blocked: true}, {new: true})
+        if (!student) res.json({message: 'Student not found'})
         res.redirect(req.get('referer'))
     } catch (err) {
         console.log(err)
@@ -101,8 +111,8 @@ exports.blockStudent = async (req, res) => {
 exports.unblockStudent = async (req, res) => {
     const studentId = req.params.id
     try {
-        const student = await Student.findByIdAndUpdate(studentId, { blocked: false }, { new: true })
-        if (!student) res.json({message:'Student not found'})
+        const student = await Student.findByIdAndUpdate(studentId, {blocked: false}, {new: true})
+        if (!student) res.json({message: 'Student not found'})
         res.redirect(req.get('referer'))
     } catch (err) {
         console.log(err)
@@ -202,9 +212,14 @@ exports.addStudent = async (req, res) => {
 
 exports.getClasses = async (req, res) => {
     try {
-        const classes = await Class.find({}).populate({
-            path:'students',
-        })
+        const classes = await Class.find({}).populate([
+            {
+                path: 'students',
+            },
+            {
+                path:'schedule'
+            }
+        ])
         res.json({classes})
     } catch (err) {
         console.log(err)

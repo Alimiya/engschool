@@ -1,6 +1,7 @@
 const Student = require('../models/studentModel')
 const Teacher = require('../models/teacherModel')
 const Class = require('../models/classModel')
+const Manager = require('../models/managerModel')
 
 exports.createStudent = async (req, res) => {
     const {name, surname, lastname} = req.body
@@ -48,6 +49,11 @@ exports.createClass = async (req, res) => {
             teacher: teacherId
         })
         await newClass.save()
+        await Teacher.findByIdAndUpdate(teacherId, { $push: { classes: newClass._id } })
+        const managers = await Manager.find({})
+        for (const manager of managers) {
+            await Manager.findByIdAndUpdate(manager._id, { $push: { classes: newClass._id } })
+        }
         res.json({newClass})
     } catch (err) {
         console.log(err)

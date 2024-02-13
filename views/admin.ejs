@@ -19,7 +19,7 @@
 <body>
 <div class="container mt-4">
     <div class="input-group mb-3">
-        <input id="searchNameInput" type="text" class="form-control" placeholder="Search by name">
+        <input id="searchInput" type="text" class="form-control" placeholder="Search by name">
     </div>
 
     <div class="input-group mb-3">
@@ -39,6 +39,7 @@
     </div>
 
     <div id="classOptions" class="mb-3" style="display: none">
+        <select id="allClasses" class="form-select mb-3"></select>
         <select id="classStatusSelect" class="form-select mb-3">
             <option value="all">All</option>
             <option value="blocked">Blocked</option>
@@ -50,9 +51,13 @@
             <option value="non-paid">Non-paid</option>
         </select>
     </div>
-        <button class="btn btn-primary mt-2" onclick="window.location.href='/admin/manager/create'">Create Manager</button>
-        <button class="btn btn-primary mt-2" onclick="window.location.href='/admin/teacher/create'">Create Teacher</button>
-        <button class="btn btn-primary mt-2" onclick="window.location.href='/admin/student/add/:id'">Add Student</button>
+    <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/admin/manager/create'">Create Manager
+    </button>
+    <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/admin/teacher/create'">Create Teacher
+    </button>
+    <form action="/api/auth/logout" method="post">
+        <button class="btn btn-danger mt-2">Logout</button>
+    </form>
 </div>
 <div class="container mt-4">
     <div class="scrollable-table-wrapper">
@@ -84,8 +89,9 @@
             <thead>
             <tr>
                 <th scope="col">Full Name</th>
-                <th scope="col">Status</th>
+                <th scope="col">Creation</th>
                 <th scope="col">Payment</th>
+                <th scope="col">Status</th>
                 <th scope="col">Action</th>
             </tr>
             </thead>
@@ -96,62 +102,154 @@
 </div>
 
 <script>
-    async function getManagers() {
-        const response = await axios.get('http://localhost:3000/api/admin/managers')
-        const managersData = response.data.managers
+    let originalManagersData = []
+    let originalTeachersData = []
+    let originalClassesData = []
 
+    async function getManagers() {
+        const response = await axios.get(`http://localhost:3000/api/admin/managers`)
+        originalManagersData = response.data.managers
+        filterManagers()
+
+    }
+
+    async function getTeachers() {
+        const response = await axios.get(`http://localhost:3000/api/admin/teachers`)
+        originalTeachersData = response.data.teachers
+        filterTeachers()
+
+    }
+
+    async function getClasses() {
+        const allClassesSelect = document.getElementById('allClasses')
+        const response = await axios.get(`http://localhost:3000/api/admin/classes`)
+        originalClassesData = response.data.classes
+        filterClasses()
+        originalClassesData.forEach(classs => {
+            const option = document.createElement('option')
+            option.value = classs._id
+            option.textContent = classs.name
+            allClassesSelect.appendChild(option)
+        })
+    }
+
+    function filterManagers() {
+        const searchQuery = searchInput.value.trim().toLowerCase()
+        const statusValue = statusSelect.value
+        console.log(statusValue)
+
+        const filteredManagers = originalManagersData.filter(manager => {
+            const fullName = `${manager.surname} ${manager.name} ${manager.lastname}`.toLowerCase()
+            const isMatch = fullName.includes(searchQuery)
+
+            if (statusValue === "blocked") {
+                return manager.blocked === true && isMatch
+            } else if (statusValue === "unblocked") {
+                return manager.blocked === false && isMatch
+            } else {
+                return isMatch
+            }
+        })
+
+        renderManagers(filteredManagers)
+    }
+
+    function filterTeachers() {
+        const searchQuery = searchInput.value.trim().toLowerCase()
+        const statusValue = statusSelect.value
+        const filteredTeachers = originalTeachersData.filter(teacher => {
+            const fullName = `${teacher.surname} ${teacher.name} ${teacher.lastname}`.toLowerCase()
+            const isMatch = fullName.includes(searchQuery)
+
+            if (statusValue === "blocked") {
+                return teacher.blocked === true && isMatch
+            } else if (statusValue === "unblocked") {
+                return teacher.blocked === false && isMatch
+            } else {
+                return isMatch
+            }
+        })
+        renderTeachers(filteredTeachers)
+    }
+
+    function filterClasses() {
+        const searchQuery = searchInput.value.trim().toLowerCase()
+        const paymentValue = paymentStatusSelect.value
+        const statusValue = classStatusSelect.value
+
+        const filteredClasses = originalClassesData.filter(classs =>
+            classs.students.some(student => {
+                console.log(student)
+                const fullName = `${student.surname} ${student.name} ${student.lastname}`.toLowerCase()
+                const isMatch = fullName.includes(searchQuery)
+
+                const isBlockedMatch = statusValue === "blocked" ? student.blocked === true : statusValue === "unblocked" ? student.blocked === false : true
+                const isPaymentMatch = paymentValue === "paid" ? student.payment === true : paymentValue === "non-paid" ? student.payment === false : true
+
+                return isMatch && isBlockedMatch && isPaymentMatch
+            })
+        )
+        renderClasses(filteredClasses)
+    }
+
+    function renderManagers(managers) {
         const managerTableBody = document.getElementById('managerTableBody')
-        managersData.forEach(manager => {
+        managerTableBody.innerHTML = ''
+
+        managers.forEach(manager => {
             const tr = document.createElement('tr')
             tr.innerHTML = `
-                <td>${manager.surname} ${manager.name} ${manager.lastname}</td>
-                <td>${manager.blocked}</td>
-                <td>
+            <td>${manager.surname} ${manager.name} ${manager.lastname}</td>
+            <td>${manager.blocked}</td>
+            <td>
                 ${manager.blocked === false ?
                 `<form action="/api/admin/manager/block/${manager._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
                 `<form action="/api/admin/manager/unblock/${manager._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
-                </td>
-            `
+            </td>
+        `
             managerTableBody.appendChild(tr)
         })
     }
 
-    async function getTeachers() {
-        const response = await axios.get('http://localhost:3000/api/admin/teachers')
-        const teachersData = response.data.teachers
-
+    function renderTeachers(teachers) {
         const teacherTableBody = document.getElementById('teacherTableBody')
-        teachersData.forEach(teacher => {
+        teacherTableBody.innerHTML = ''
+
+        teachers.forEach(teacher => {
             const tr = document.createElement('tr')
             tr.innerHTML = `
-                <td>${teacher.surname} ${teacher.name} ${teacher.lastname}</td>
-                <td>${teacher.blocked}</td>
-                <td>
+            <td>${teacher.surname} ${teacher.name} ${teacher.lastname}</td>
+            <td>${teacher.blocked}</td>
+            <td>
                 ${teacher.blocked === false ?
                 `<form action="/api/admin/teacher/block/${teacher._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
                 `<form action="/api/admin/teacher/unblock/${teacher._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
-                </td>
-            `
+            </td>
+        `
             teacherTableBody.appendChild(tr)
         })
     }
 
-    async function getClasses() {
-        const response = await axios.get('http://localhost:3000/api/admin/classes')
-        const classesData = response.data.classes
-
+    function renderClasses(classesData) {
         const studentTableBody = document.getElementById('studentTableBody')
+        studentTableBody.innerHTML = ''
         classesData.forEach(classs => {
             classs.students.forEach(student => {
                 const tr = document.createElement('tr')
                 tr.innerHTML = `
                     <td>${student.surname} ${student.name} ${student.lastname}</td>
-                    <td>${student.blocked}</td>
+                    <td>${student.status}</td>
                     <td>${student.payment}</td>
+                    <td>${student.blocked}</td>
                     <td>
                     ${student.blocked === false ?
                     `<form action="/api/admin/student/block/${student._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
                     `<form action="/api/admin/student/unblock/${student._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
+                    </td>
+                    <td>
+                    ${student.status === "created" ?
+                    `<button class="btn btn-success" type="submit" onclick="window.location.href='/profile/admin/student/add/${student._id}'">Add</button>` :
+                    ``}
                     </td>
                 `
                 studentTableBody.appendChild(tr)
@@ -159,7 +257,11 @@
         })
     }
 
+
     const categorySelect = document.getElementById('categorySelect')
+    const classStatusSelect = document.getElementById('classStatusSelect')
+    const paymentStatusSelect = document.getElementById('paymentStatusSelect')
+    const allClassesSelect = document.getElementById('allClasses')
     const statusSelect = document.getElementById('statusSelect')
     const classOptions = document.getElementById('classOptions')
     const managerTable = document.getElementById('managerTable')
@@ -188,13 +290,37 @@
         }
     })
 
-    function reloadPage() {
-        location.reload()
-    }
+    statusSelect.addEventListener('change', function () {
+        const selectedCategory = categorySelect.value
 
+        if (selectedCategory === 'manager') {
+            filterManagers()
+        } else if (selectedCategory === 'teacher') {
+            filterTeachers()
+        }
+    })
+
+    classStatusSelect.addEventListener('change', function () {
+        filterClasses()
+    })
+    paymentStatusSelect.addEventListener('change', function () {
+        filterClasses()
+    })
+    const searchInput = document.getElementById('searchInput')
+    searchInput.addEventListener('input', () => {
+        console.log("Input value:", searchInput.value)
+
+        const selectedCategory = categorySelect.value
+
+        if (selectedCategory === 'manager') {
+            filterManagers()
+        } else if (selectedCategory === 'teacher') {
+            filterTeachers()
+        } else if (selectedCategory === 'class') {
+            filterClasses()
+        }
+    })
     document.addEventListener('DOMContentLoaded', () => {
-
-
         getManagers()
         getTeachers()
         getClasses()

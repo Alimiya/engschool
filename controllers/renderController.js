@@ -17,3 +17,15 @@ exports.getTeacher = async (req, res) => {
 exports.getStudent = async (req, res) => {
     res.render('student')
 }
+
+exports.createManager = async (req, res) => {
+    res.render('components/createManager')
+}
+
+exports.createTeacher = async (req, res) => {
+    res.render('components/createTeacher')
+}
+
+exports.addStudent = async (req, res) => {
+    res.render('components/addStudent')
+}

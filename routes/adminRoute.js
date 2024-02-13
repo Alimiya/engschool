@@ -5,6 +5,7 @@ const {verifyAdminToken} = require('../middlewares/verify')
 const {ADMIN_TOKEN_SECRET} = process.env
 
 
+router.get('/manager/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getManagerById)
 router.post('/manager/create', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.createManager)
 router.post('/manager/block/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.blockManager)
 router.post('/manager/unblock/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.unblockManager)

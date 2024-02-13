@@ -19,10 +19,10 @@ exports.login = async (req, res) => {
         let token
 
         user = await Admin.findOne({username})
-        userId = user._id
         if (user) {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
+                userId = user._id
                 token = generateAdminToken(user)
                 return handleLoginSuccess(res, token, 'admin', userId)
             }
@@ -32,6 +32,7 @@ exports.login = async (req, res) => {
         if (user) {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
+                userId = user._id
                 token = generateManagerToken(user)
                 return handleLoginSuccess(res, token, 'manager', userId)
             }
@@ -41,6 +42,7 @@ exports.login = async (req, res) => {
         if (user) {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
+                userId = user._id
                 token = generateTeacherToken(user)
                 return handleLoginSuccess(res, token, 'teacher', userId)
             }
@@ -50,6 +52,7 @@ exports.login = async (req, res) => {
         if (user) {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
+                userId = user._id
                 token = generateStudentToken(user)
                 return handleLoginSuccess(res, token, 'student', userId)
             }
