@@ -29,3 +29,19 @@ exports.createTeacher = async (req, res) => {
 exports.addStudent = async (req, res) => {
     res.render('components/addStudent')
 }
+
+exports.createClass = async (req, res) => {
+    res.render('components/createClass')
+}
+
+exports.createStudent = async (req, res) => {
+    res.render('components/createStudent')
+}
+
+exports.addStudentToClass = async (req, res) => {
+    res.render('components/updateClass')
+}
+
+exports.createClassSchedule = async (req, res) => {
+    res.render('components/createClassSchedule')
+}

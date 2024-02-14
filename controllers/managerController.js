@@ -1,5 +1,5 @@
 const Class = require("../models/classModel")
-const Manager = require("../models/managerModel");
+const Manager = require("../models/managerModel")
 
 exports.getManagerById = async (req, res) => {
     const managerId = req.params.id

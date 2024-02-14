@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Student</title>
+    <title>Create Student</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
@@ -10,40 +10,34 @@
             crossorigin="anonymous"></script>
 </head>
 <body class="text-center">
-<section class="vh-100">
+<section class="vh-80">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
-                    <form method="post" class="card-body p-5 text-center" id="formContainer">
-                        <h3 class="mb-5">Add Student</h3>
+                    <form action="/api/teacher/student/create" method="post" class="card-body p-5 text-center">
+                        <h3 class="mb-5">Create Student</h3>
                         <div class="form-floating mb-4">
-                            <input type="text" id="username" name="username" class="form-control" required/>
-                            <label class="form-label" for="username">Username</label>
+                            <input type="text" id="surname" name="surname" class="form-control" required/>
+                            <label class="form-label" for="surname">Surname</label>
                         </div>
 
                         <div class="form-floating mb-4">
-                            <input type="password" id="password" name="password" class="form-control" required/>
-                            <label class="form-label" for="password">Password</label>
+                            <input type="text" id="name" name="name" class="form-control" required/>
+                            <label class="form-label" for="name">Name</label>
                         </div>
-                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2">Add</button>
+
+                        <div class="form-floating mb-4">
+                            <input type="text" id="lastname" name="lastname" class="form-control" required/>
+                            <label class="form-label" for="lastname">Lastname</label>
+                        </div>
+
+                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2">Create</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<script>
-    function extractIdsFromUrl(url) {
-        const segments = url.split("/")
-        const studentId = segments[7]
-        return { studentId}
-    }
-
-    const url = window.location.href
-    const { studentId} = extractIdsFromUrl(url)
-    const formContainer = document.getElementById('formContainer')
-    formContainer.action = `/api/admin/student/add/${studentId}`
-</script>
 </body>
 </html>

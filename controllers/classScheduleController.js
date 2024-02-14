@@ -4,8 +4,7 @@ const {generateMonthCalendar} = require('../middlewares/calendar')
 
 
 exports.createClassSchedule = async (req, res) => {
-    const { year, month, selectedLessonDays } = req.body
-    const classId = req.params.id
+    const { classId, year, month, selectedLessonDays } = req.body
     const teacherId = req.user._id
 
     try {

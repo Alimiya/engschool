@@ -10,5 +10,9 @@ router.get('/profile/admin/manager/create', Controller.createManager)
 router.get('/profile/admin/teacher/create', Controller.createTeacher)
 router.get('/profile/admin/student/add/:id', Controller.addStudent)
 router.get('/profile/student/:id', Controller.getStudent)
+router.get('/profile/teacher/student/create', Controller.createStudent)
+router.get('/profile/teacher/class/create', Controller.createClass)
+router.get('/profile/teacher/class/add/students', Controller.addStudentToClass)
+router.get('/profile/teacher/class/add/schedule', Controller.createClassSchedule)
 
 module.exports = router

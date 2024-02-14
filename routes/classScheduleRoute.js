@@ -4,7 +4,7 @@ const Controller = require('../controllers/classScheduleController')
 const {verifyTeacherToken} = require('../middlewares/verify')
 const {TEACHER_TOKEN_SECRET} = process.env
 
-router.post('/create/:id', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.createClassSchedule)
+router.post('/create', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.createClassSchedule)
 router.get('/:id', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getClassScheduleById)
 
 module.exports = router

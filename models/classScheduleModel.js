@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const classScheduleSchema = mongoose.Schema({
     classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
     year: { type: Number, required: true },
-    month: { type: String, required: true },
+    month: { type: Number, required: true },
     calendar: {
         days: [[Number]],
         daysOfWeek: [String]
