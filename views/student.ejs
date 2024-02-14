@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            Personal Info
+        </div>
+        <div class="card-body">
+            <h5 class="card-title" id="studentName"></h5>
+            <p class="card-text" id="studentClass" value="classId"></p>
+            <form action="/api/auth/logout" method="post">
+                <button class="btn btn-danger mt-2">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <select class="form-select mb-2" id="yearSelect">
+        </select>
+
+        <select class="form-select mb-2" id="monthSelect">
+        </select>
+    </div>
+
+    <div class="mt-3">
+        <div id="calendar" class="calendar"></div>
+    </div>
+</div>
+<script>
+    function fetchStudentDataAndRenderCalendar() {
+        const url = window.location.href
+        const {studentId} = extractIdsFromUrl(url)
+        const yearSelect = document.getElementById('yearSelect')
+        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+
+        const monthSelect = document.getElementById('monthSelect')
+        monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+        axios.get(`http://localhost:3000/api/student/${studentId}`)
+            .then(function (response) {
+                const student = response.data.student
+                document.getElementById('studentName').innerText = `${student.surname} ${student.name} ${student.lastname}`
+                document.getElementById('studentClass').innerText = `Class: ${student.class.name}`
+                document.getElementById('studentClass').setAttribute('value', student.class._id)
+
+                const classId = student.class._id
+                const defaultClass = student.class
+                defaultClass.schedule.forEach(scheduleItem => {
+                    renderCalendar(scheduleItem.calendar)
+                    const yearSelect = document.getElementById('yearSelect')
+                    const years = [scheduleItem.year]
+                    years.forEach(year => {
+                        const option = document.createElement('option')
+                        option.value = year
+                        option.innerText = year
+                        yearSelect.appendChild(option)
+                    })
+
+                    const monthSelect = document.getElementById('monthSelect')
+                    const months = [scheduleItem.month]
+                    months.forEach(month => {
+                        const option = document.createElement('option')
+                        option.value = month
+                        option.innerText = month
+                        monthSelect.appendChild(option)
+                    })
+                })
+            })
+            .catch(function (error) {
+                console.error('Error fetching teacher data:', error)
+            })
+    }
+
+    document.getElementById('yearSelect').addEventListener('change', function (event) {
+        const selectedYear = event.target.value
+        const selectedMonth = document.getElementById('monthSelect').value
+        const studentClassId = document.getElementById('studentClass').getAttribute('value')
+        fetchClassCalendarIfSelected(studentClassId, selectedYear, selectedMonth)
+    })
+
+    document.getElementById('monthSelect').addEventListener('change', function (event) {
+        const selectedMonth = event.target.value
+        const selectedYear = document.getElementById('yearSelect').value
+        const studentClassId = document.getElementById('studentClass').getAttribute('value')
+        fetchClassCalendarIfSelected(studentClassId, selectedYear, selectedMonth)
+    })
+
+    function fetchClassCalendarIfSelected(classId, year, month) {
+        if (classId && year && month) {
+            fetchClassCalendar(classId, year, month)
+        } else {
+            hideCalendar()
+        }
+    }
+
+    function hideCalendar() {
+        const calendarElement = document.getElementById('calendar')
+        calendarElement.innerHTML = ''
+    }
+
+    function fetchClassCalendar(classId, year, month) {
+        axios.get(`http://localhost:3000/api/classschedule/${classId}/${year}/${month}`)
+            .then(function (response) {
+                const calendarData = response.data.calendar
+                renderCalendar(calendarData)
+            })
+            .catch(function (error) {
+                console.error('Error fetching class schedule:', error)
+            })
+    }
+
+    function renderCalendar(calendarData) {
+        const calendarElement = document.getElementById('calendar')
+        calendarElement.innerHTML = ''
+
+        const daysOfWeek = calendarData.daysOfWeek
+        const days = calendarData.days
+
+        const table = document.createElement('table')
+        table.classList.add('table')
+
+        const thead = document.createElement('thead')
+        const headerRow = document.createElement('tr')
+        daysOfWeek.forEach(day => {
+            const th = document.createElement('th')
+            th.textContent = day
+            headerRow.appendChild(th)
+        })
+        thead.appendChild(headerRow)
+        table.appendChild(thead)
+
+        const tbody = document.createElement('tbody')
+        days.forEach(week => {
+            const weekRow = document.createElement('tr')
+            week.forEach(day => {
+                const td = document.createElement('td')
+                td.textContent = day ? day : ''
+                td.classList.add('calendar-day')
+                td.addEventListener('click', function() {
+                    handleCalendarDayClick(day)
+                })
+                weekRow.appendChild(td)
+            })
+            tbody.appendChild(weekRow)
+        })
+        table.appendChild(tbody)
+
+        calendarElement.appendChild(table)
+    }
+
+    function handleCalendarDayClick(day) {
+        alert(`You clicked on ${day}`)
+    }
+
+    function extractIdsFromUrl(url) {
+        const segments = url.split("/")
+        const studentId = segments[5]
+        return { studentId}
+    }
+
+    fetchStudentDataAndRenderCalendar()
+</script>
+</body>
+</html>

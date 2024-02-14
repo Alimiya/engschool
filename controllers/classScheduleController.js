@@ -24,7 +24,7 @@ exports.createClassSchedule = async (req, res) => {
                 calendar: monthCalendar
             })
             await newSchedule.save()
-            await Class.findByIdAndUpdate(classId, { schedule: newSchedule }, { new: true })
+            await Class.findByIdAndUpdate(classId, { $push: { schedule: newSchedule } })
             res.json({newSchedule})
         }
     } catch (error) {
@@ -62,6 +62,16 @@ exports.getClassScheduleById = async (req, res) => {
             return { ...item.toObject(), scheduleDays }
         })
         res.json(scheduleWithWeekdays)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.getCurrentSchedule = async (req, res) => {
+    const {classId, year, month} = req.params
+    try {
+        const schedule = await ClassSchedule.findOne({ classId, year, month })
+        res.json(schedule)
     } catch (err) {
         console.log(err)
     }

@@ -11,7 +11,8 @@ const studentSchema = mongoose.Schema({
     status:{type:String ,enum:['created','added'], default:'created'},
     class:{type:mongoose.Schema.Types.ObjectId, ref:'Class'},
     attendance:[{type:mongoose.Schema.Types.ObjectId, ref:'Attendance'}],
-    payment:{type:Boolean, default:false}
+    payment:{type:Boolean, default:false},
+    createdAt:{type:Date, default:Date.now()}
 })
 
 const Student = mongoose.model('Student', studentSchema)

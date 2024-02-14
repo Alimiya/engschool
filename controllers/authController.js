@@ -77,7 +77,7 @@ exports.logout = async (req, res) => {
         res.clearCookie('manager')
         res.clearCookie('teacher')
         res.clearCookie('student')
-        res.json({message: "logouted"})
+        res.redirect('/')
     } catch (err) {
         console.log(err)
     }

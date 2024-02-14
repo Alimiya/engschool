@@ -1,12 +1,14 @@
 const Class = require('../models/classModel')
+const Student = require('../models/studentModel')
 
-exports.getSchedule = async (req,res) =>{
-    const studentId = req.user._id
+exports.getStudentById = async (req,res) =>{
+    const studentId = req.params.id
     try{
-        const classInfo = await Class.find({students:studentId}).populate({
-            path:'schedule',
+        const student = await Student.findById(studentId).populate({
+            path:'class',
+            populate:{path:'schedule'}
         })
-    res.json({classInfo})
+        res.json({student})
     } catch(err){
         console.log(err)
     }

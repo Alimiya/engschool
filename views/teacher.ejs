@@ -57,6 +57,15 @@
     function fetchTeacherDataAndRenderCalendar() {
         const url = window.location.href
         const {teacherId} = extractIdsFromUrl(url)
+
+        const classSelect = document.getElementById('classSelect')
+        classSelect.innerHTML = '<option value="" selected disabled>Select Class</option>'
+
+        const yearSelect = document.getElementById('yearSelect')
+        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+
+        const monthSelect = document.getElementById('monthSelect')
+        monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
         axios.get(`http://localhost:3000/api/teacher/${teacherId}`)
             .then(function (response) {
                 const teacher = response.data.teacher[0]
@@ -73,11 +82,10 @@
                 })
                 const defaultClassId = teacher.classes[0]._id
                 const defaultClass = teacher.classes.find(cls => cls._id === defaultClassId)
-                renderCalendar(defaultClass.schedule.calendar)
-                console.log(defaultClass.schedule.year)
+                defaultClass.schedule.forEach(scheduleItem => {
+                renderCalendar(scheduleItem.calendar)
                 const yearSelect = document.getElementById('yearSelect')
-                const years = [defaultClass.schedule.year]
-                console.log(years)
+                const years = [scheduleItem.year]
                 years.forEach(year => {
                     const option = document.createElement('option')
                     option.value = year
@@ -86,13 +94,13 @@
                 })
 
                 const monthSelect = document.getElementById('monthSelect')
-                const months = [defaultClass.schedule.month]
-                console.log(months)
+                const months = [scheduleItem.month]
                 months.forEach(month => {
                     const option = document.createElement('option')
                     option.value = month
                     option.innerText = month
                     monthSelect.appendChild(option)
+                })
                 })
             })
             .catch(function (error) {
@@ -102,8 +110,47 @@
 
     document.getElementById('classSelect').addEventListener('change', function (event) {
         const selectedClassId = event.target.value
-        fetchClassCalendar(selectedClassId)
+        fetchClassCalendarIfSelected(selectedClassId)
     })
+
+    document.getElementById('yearSelect').addEventListener('change', function (event) {
+        const selectedYear = event.target.value
+        const selectedMonth = document.getElementById('monthSelect').value
+        const selectedClassId = document.getElementById('classSelect').value
+        fetchClassCalendarIfSelected(selectedClassId, selectedYear, selectedMonth)
+    })
+
+    document.getElementById('monthSelect').addEventListener('change', function (event) {
+        const selectedMonth = event.target.value
+        const selectedYear = document.getElementById('yearSelect').value
+        const selectedClassId = document.getElementById('classSelect').value
+        fetchClassCalendarIfSelected(selectedClassId, selectedYear, selectedMonth)
+    })
+
+    function fetchClassCalendarIfSelected(classId, year, month) {
+        if (classId && year && month) {
+            fetchClassCalendar(classId, year, month)
+        } else {
+            hideCalendar()
+        }
+    }
+
+    function hideCalendar() {
+        const calendarElement = document.getElementById('calendar')
+        calendarElement.innerHTML = ''
+    }
+
+    function fetchClassCalendar(classId, year, month) {
+        axios.get(`http://localhost:3000/api/classschedule/${classId}/${year}/${month}`)
+            .then(function (response) {
+                const calendarData = response.data.calendar
+                console.log(calendarData)
+                renderCalendar(calendarData)
+            })
+            .catch(function (error) {
+                console.error('Error fetching class schedule:', error)
+            })
+    }
 
     function renderCalendar(calendarData) {
         const calendarElement = document.getElementById('calendar')
