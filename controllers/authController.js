@@ -65,20 +65,22 @@ exports.login = async (req, res) => {
     }
 }
 
-function handleLoginSuccess(res, token, role, userId) {
-    res.cookie(role, token, {maxAge: process.env.TOKEN_EXPIRE * 100000})
-    res.header('Authorization', `Bearer ${token}`)
-    res.redirect(`/profile/${role}/${userId}`)
-}
-
 exports.logout = async (req, res) => {
     try {
         res.clearCookie('admin')
         res.clearCookie('manager')
         res.clearCookie('teacher')
         res.clearCookie('student')
+
         res.redirect('/')
     } catch (err) {
         console.log(err)
     }
+}
+
+function handleLoginSuccess(res, token, role, userId) {
+    res.cookie(role, token, {maxAge: process.env.TOKEN_EXPIRE * 100000})
+    res.header('Authorization', `Bearer ${token}`)
+
+    res.redirect(`/profile/${role}/${userId}`)
 }

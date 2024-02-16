@@ -5,5 +5,6 @@ const {verifyStudentToken} = require('../middlewares/verify')
 const {STUDENT_TOKEN_SECRET} = process.env
 
 router.get('/:id', verifyStudentToken(STUDENT_TOKEN_SECRET), Controller.getStudentById)
+router.post('/:id/:year/:month', verifyStudentToken(STUDENT_TOKEN_SECRET), Controller.payDate)
 
 module.exports = router

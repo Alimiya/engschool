@@ -10,8 +10,12 @@ const studentSchema = mongoose.Schema({
     role: { type: String, default: 'student'},
     status:{type:String ,enum:['created','added'], default:'created'},
     class:{type:mongoose.Schema.Types.ObjectId, ref:'Class'},
-    attendance:[{type:mongoose.Schema.Types.ObjectId, ref:'Attendance'}],
-    payment:{type:Boolean, default:false},
+    lessons:[{type:mongoose.Schema.Types.ObjectId, ref:'Lesson'}],
+    payments:[{
+        year: {type: Number, required: true},
+        month: {type: Number, required: true},
+        payment: {type: Boolean, default: false}
+    }],
     createdAt:{type:Date, default:Date.now()}
 })
 

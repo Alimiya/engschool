@@ -34,17 +34,11 @@
                             <label class="form-label" for="month">Month</label>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="lessonSelect" class="form-label">Select Days:</label>
-                            <select class="form-select" id="lessonSelect" name="selectedLessonDays" multiple required>
-                                <option value="Mon">Monday</option>
-                                <option value="Tue">Tuesday</option>
-                                <option value="Wed">Wednesday</option>
-                                <option value="Thu">Thursday</option>
-                                <option value="Fri">Friday</option>
-                                <option value="Sat">Saturday</option>
-                            </select>
+                        <div class="form-floating mb-4">
+                            <input type="number" id="numberOfLessons" name="numberOfLessons" class="form-control" min="10" max="12" required/>
+                            <label class="form-label" for="numberOfLessons">Number of Lessons (10-12)</label>
                         </div>
+
                         <button type="submit" class="w-100 btn btn-lg btn-primary mb-2">Create</button>
                     </form>
                 </div>
@@ -62,14 +56,6 @@
             return []
         }
     }
-
-    document.getElementById('scheduleForm').addEventListener('submit', function(event) {
-        const selectedOptions = document.querySelectorAll('#lessonSelect option:checked')
-        if (selectedOptions.length !== 3) {
-            event.preventDefault()
-            alert('Please select exactly 3 options for lesson days.')
-        }
-    })
 
     document.addEventListener("DOMContentLoaded", async function () {
         try {

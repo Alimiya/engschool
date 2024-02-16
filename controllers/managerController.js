@@ -4,8 +4,10 @@ const Manager = require("../models/managerModel")
 exports.getManagerById = async (req, res) => {
     const managerId = req.params.id
     const userId = req.user._id
+
     try {
         if (managerId !== userId) return res.json({message: "Not same user"})
+
         const manager = await Manager.findOne({_id:managerId}).populate(
             {
             path:'classes',
@@ -42,6 +44,7 @@ exports.getClasses = async (req, res) => {
 
 exports.getClassById = async (req, res) => {
     const classId = req.params.id
+
     try {
         const classInfo = await Class.findById(classId).populate([
             {

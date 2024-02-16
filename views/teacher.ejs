@@ -27,6 +27,8 @@
             </button>
             <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/schedule'">Create Schedule
             </button>
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/lessons'">Add Lessons
+            </button>
             <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/students'" id="addTo">Add Student to Class
             </button>
             <form action="/api/auth/logout" method="post">
@@ -80,32 +82,52 @@
                     option.innerText = cls.name
                     classSelect.appendChild(option)
                 })
-                const defaultClassId = teacher.classes[0]._id
-                const defaultClass = teacher.classes.find(cls => cls._id === defaultClassId)
-                defaultClass.schedule.forEach(scheduleItem => {
-                renderCalendar(scheduleItem.calendar)
-                const yearSelect = document.getElementById('yearSelect')
-                const years = [scheduleItem.year]
-                years.forEach(year => {
-                    const option = document.createElement('option')
-                    option.value = year
-                    option.innerText = year
-                    yearSelect.appendChild(option)
-                })
 
-                const monthSelect = document.getElementById('monthSelect')
-                const months = [scheduleItem.month]
-                months.forEach(month => {
-                    const option = document.createElement('option')
-                    option.value = month
-                    option.innerText = month
-                    monthSelect.appendChild(option)
-                })
-                })
+                const yearsAndMonths = getUniqueYearsAndMonthsForTeacher(teacher.classes)
+                renderYearAndMonthSelect(yearsAndMonths)
             })
             .catch(function (error) {
                 console.error('Error fetching teacher data:', error)
             })
+    }
+
+    function getUniqueYearsAndMonthsForTeacher(classes) {
+        const yearsAndMonths = {}
+        classes.forEach(cls => {
+            cls.schedule.forEach(scheduleItem => {
+                if (!yearsAndMonths[scheduleItem.year]) {
+                    yearsAndMonths[scheduleItem.year] = []
+                }
+                if (!yearsAndMonths[scheduleItem.year].includes(scheduleItem.month)) {
+                    yearsAndMonths[scheduleItem.year].push(scheduleItem.month)
+                }
+            })
+        })
+        return yearsAndMonths
+    }
+
+    function renderYearAndMonthSelect(yearsAndMonths) {
+        const yearSelect = document.getElementById('yearSelect')
+        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+        Object.keys(yearsAndMonths).forEach(year => {
+            const option = document.createElement('option')
+            option.value = year
+            option.innerText = year
+            yearSelect.appendChild(option)
+        })
+        yearSelect.addEventListener('change', function (event) {
+            const selectedYear = event.target.value
+            const monthSelect = document.getElementById('monthSelect')
+            monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+            if (selectedYear) {
+                yearsAndMonths[selectedYear].forEach(month => {
+                    const option = document.createElement('option')
+                    option.value = month
+                    option.innerText = getMonthName(month)
+                    monthSelect.appendChild(option)
+                })
+            }
+        })
     }
 
     document.getElementById('classSelect').addEventListener('change', function (event) {
@@ -144,56 +166,67 @@
         axios.get(`http://localhost:3000/api/classschedule/${classId}/${year}/${month}`)
             .then(function (response) {
                 const calendarData = response.data.calendar
-                console.log(calendarData)
-                renderCalendar(calendarData)
+                const selectedLessonDays = response.data.selectedLessonDays
+                renderCalendar(calendarData, selectedLessonDays)
             })
             .catch(function (error) {
                 console.error('Error fetching class schedule:', error)
             })
     }
 
-    function renderCalendar(calendarData) {
-        const calendarElement = document.getElementById('calendar')
-        calendarElement.innerHTML = ''
+    function renderCalendar(calendarData, selectedLessonDays) {
+        const calendarElement = document.getElementById('calendar');
+        calendarElement.innerHTML = '';
 
-        const daysOfWeek = calendarData.daysOfWeek
-        const days = calendarData.days
+        const daysOfWeek = calendarData.daysOfWeek;
+        const days = calendarData.days;
 
-        const selectedLessonDays = calendarData.selectedLessonDays || []
+        const table = document.createElement('table');
+        table.classList.add('table');
 
-        const table = document.createElement('table')
-        table.classList.add('table')
-
-        const thead = document.createElement('thead')
-        const headerRow = document.createElement('tr')
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
         daysOfWeek.forEach(day => {
-            const th = document.createElement('th')
-            th.textContent = day
-            headerRow.appendChild(th)
-        })
-        thead.appendChild(headerRow)
-        table.appendChild(thead)
+            const th = document.createElement('th');
+            th.textContent = day;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
 
-        const tbody = document.createElement('tbody')
+        const tbody = document.createElement('tbody');
         days.forEach(week => {
-            const weekRow = document.createElement('tr')
+            const weekRow = document.createElement('tr');
             week.forEach(day => {
-                const td = document.createElement('td')
-                td.textContent = day ? day : ''
-                td.classList.add('calendar-day')
-                if (selectedLessonDays.includes(daysOfWeek[new Date(day).getDay()])) {
-                    td.classList.add('selected-lesson')
+                const td = document.createElement('td');
+                td.textContent = day ? day : '';
+                td.classList.add('calendar-day');
+                if (day && selectedLessonDays.includes(getDayOfWeek(new Date(day).toDateString()))) {
+                    td.classList.add('selected-lesson');
                 }
                 td.addEventListener('click', function() {
-                    handleCalendarDayClick(day)
-                })
-                weekRow.appendChild(td)
-            })
-            tbody.appendChild(weekRow)
-        })
-        table.appendChild(tbody)
+                    handleCalendarDayClick(day);
+                });
+                weekRow.appendChild(td);
+            });
+            tbody.appendChild(weekRow);
+        });
+        table.appendChild(tbody);
 
-        calendarElement.appendChild(table)
+        calendarElement.appendChild(table);
+    }
+
+    function getDayOfWeek(dateString) {
+        const date = new Date(dateString)
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        const dayIndex = date.getDay();
+        console.log(days[dayIndex])
+        return days[dayIndex];
+    }
+
+    function getMonthName(month) {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        return monthNames[month - 1] || ''
     }
 
     function handleCalendarDayClick(day) {

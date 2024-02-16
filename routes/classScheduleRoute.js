@@ -6,6 +6,7 @@ const {TEACHER_TOKEN_SECRET, STUDENT_TOKEN_SECRET} = process.env
 
 router.post('/create', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.createClassSchedule)
 router.get('/:id', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getClassScheduleById)
+router.post('/add/lessons', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.selectLessonDays)
 router.get('/:classId/:year/:month', Controller.getCurrentSchedule)
 
 module.exports = router

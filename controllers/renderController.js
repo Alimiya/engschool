@@ -1,4 +1,4 @@
-exports. getLogin = async (req, res) => {
+exports.getLogin = async (req, res) => {
     res.render('login')
 }
 
@@ -44,4 +44,8 @@ exports.addStudentToClass = async (req, res) => {
 
 exports.createClassSchedule = async (req, res) => {
     res.render('components/createClassSchedule')
+}
+
+exports.addLessons = async (req, res) => {
+    res.render('components/addLessonDays')
 }

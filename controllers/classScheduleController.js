@@ -2,9 +2,8 @@ const ClassSchedule = require('../models/classScheduleModel')
 const Class = require('../models/classModel')
 const {generateMonthCalendar} = require('../middlewares/calendar')
 
-
 exports.createClassSchedule = async (req, res) => {
-    const { classId, year, month, selectedLessonDays } = req.body
+    const { classId, year, month, selectedLessonDays, numberOfLessons } = req.body
     const teacherId = req.user._id
 
     try {
@@ -12,24 +11,27 @@ exports.createClassSchedule = async (req, res) => {
 
         if (existingSchedule) {
             existingSchedule.selectedLessonDays = selectedLessonDays
+
             existingSchedule = await existingSchedule.save()
             res.json({ existingSchedule })
         } else {
             const monthCalendar = await generateMonthCalendar(year, month)
+
             const newSchedule = await ClassSchedule.create({
                 classId,
                 year,
                 month,
                 selectedLessonDays: selectedLessonDays,
-                calendar: monthCalendar
+                calendar: monthCalendar,
+                numberOfLessons
             })
+
             await newSchedule.save()
             await Class.findByIdAndUpdate(classId, { $push: { schedule: newSchedule } })
             res.json({newSchedule})
         }
-    } catch (error) {
-        console.error('Error creating class schedule:', error)
-        throw error
+    } catch (err) {
+        console.log(err)
     }
 }
 
@@ -39,10 +41,7 @@ exports.getClassScheduleById = async (req, res) => {
 
     try {
         const schedule = await ClassSchedule.find(classId)
-
-        if (!schedule) {
-            return res.status(404).json({ error: 'Class schedule not found' })
-        }
+        if (!schedule) return res.json({ message: 'Class schedule not found' })
 
         const scheduleWithWeekdays = schedule.map(item => {
             const calendar = item.calendar.days
@@ -69,9 +68,31 @@ exports.getClassScheduleById = async (req, res) => {
 
 exports.getCurrentSchedule = async (req, res) => {
     const {classId, year, month} = req.params
+
     try {
         const schedule = await ClassSchedule.findOne({ classId, year, month })
         res.json(schedule)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.selectLessonDays = async (req, res) => {
+    const { classScheduleId, lessonDays} = req.body
+
+    try {
+        const schedule = await ClassSchedule.findById(classScheduleId)
+
+        if (!schedule) return res.json({ message: 'Class schedule not found' })
+        console.log(lessonDays)
+        console.log(lessonDays.length)
+        console.log(schedule.numberOfLessons)
+        if (lessonDays.length !== schedule.numberOfLessons) return res.json({ message: 'You exceeded the number of lessons' })
+
+        schedule.lessonDays = lessonDays
+        await schedule.save()
+
+        return res.json({ message: 'Lesson days selected successfully', schedule })
     } catch (err) {
         console.log(err)
     }

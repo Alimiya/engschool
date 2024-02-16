@@ -15,6 +15,7 @@ exports.getManagers = async (req, res) => {
 
 exports.getManagerById = async (req, res) => {
     const managerId = req.params.id
+
     try {
         const manager = await Manager.findOne(managerId)
         res.json({manager})
@@ -26,13 +27,11 @@ exports.getManagerById = async (req, res) => {
 exports.createManager = async (req, res) => {
     const {name, surname, lastname, username, password} = req.body
 
-    const userExists = await Manager.findOne({username})
-    if (userExists) {
-        return res.json({message: "Username already taken"})
-    }
-
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
+
+    const userExists = await Manager.findOne({username})
+    if (userExists) return res.json({message: "Username already taken"})
 
     try {
         const newUser = await new Manager({
@@ -42,6 +41,7 @@ exports.createManager = async (req, res) => {
             username,
             password: hashedPassword,
         })
+
         await newUser.save()
         res.json({newUser})
     } catch (err) {
@@ -51,9 +51,11 @@ exports.createManager = async (req, res) => {
 
 exports.blockManager = async (req, res) => {
     const managerId = req.params.id
+
     try {
         const manager = await Manager.findByIdAndUpdate(managerId, {blocked: true}, {new: true})
         if (!manager) res.json({message: 'Manager not found'})
+
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -63,9 +65,11 @@ exports.blockManager = async (req, res) => {
 
 exports.unblockManager = async (req, res) => {
     const managerId = req.params.id
+
     try {
         const manager = await Manager.findByIdAndUpdate(managerId, {blocked: false}, {new: true})
         if (!manager) res.json({message: 'Manager not found'})
+
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -75,9 +79,11 @@ exports.unblockManager = async (req, res) => {
 
 exports.blockTeacher = async (req, res) => {
     const teacherId = req.params.id
+
     try {
         const teacher = await Teacher.findByIdAndUpdate(teacherId, {blocked: true}, {new: true})
         if (!teacher) res.json({message: 'Teacher not found'})
+
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -87,9 +93,11 @@ exports.blockTeacher = async (req, res) => {
 
 exports.unblockTeacher = async (req, res) => {
     const teacherId = req.params.id
+
     try {
         const teacher = await Teacher.findByIdAndUpdate(teacherId, {blocked: false}, {new: true})
         if (!teacher) res.json({message: 'Teacher not found'})
+
         res.redirect(req.get('referer'))
 
     } catch (err) {
@@ -99,9 +107,11 @@ exports.unblockTeacher = async (req, res) => {
 
 exports.blockStudent = async (req, res) => {
     const studentId = req.params.id
+
     try {
         const student = await Student.findByIdAndUpdate(studentId, {blocked: true}, {new: true})
         if (!student) res.json({message: 'Student not found'})
+
         res.redirect(req.get('referer'))
     } catch (err) {
         console.log(err)
@@ -110,9 +120,11 @@ exports.blockStudent = async (req, res) => {
 
 exports.unblockStudent = async (req, res) => {
     const studentId = req.params.id
+
     try {
         const student = await Student.findByIdAndUpdate(studentId, {blocked: false}, {new: true})
         if (!student) res.json({message: 'Student not found'})
+
         res.redirect(req.get('referer'))
     } catch (err) {
         console.log(err)
@@ -130,6 +142,7 @@ exports.getTeachers = async (req, res) => {
 }
 exports.getTeacherById = async (req, res) => {
     const teacherId = req.params.id
+
     try {
         const teacher = await Teacher.findById(teacherId)
         res.json({teacher})
@@ -141,13 +154,11 @@ exports.getTeacherById = async (req, res) => {
 exports.createTeacher = async (req, res) => {
     const {name, surname, lastname, username, password} = req.body
 
-    const userExists = await Teacher.findOne({username})
-    if (userExists) {
-        return res.json({message: "Username already taken"})
-    }
-
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
+
+    const userExists = await Teacher.findOne({username})
+    if (userExists) return res.json({message: "Username already taken"})
 
     try {
         const newUser = await new Teacher({
@@ -157,6 +168,7 @@ exports.createTeacher = async (req, res) => {
             username,
             password: hashedPassword,
         })
+
         await newUser.save()
         res.json({newUser})
     } catch (err) {
@@ -175,6 +187,7 @@ exports.getStudents = async (req, res) => {
 
 exports.getStudentById = async (req, res) => {
     const studentId = req.params.id
+
     try {
         const student = await Student.findById(studentId)
         res.json({student})
@@ -187,6 +200,9 @@ exports.addStudent = async (req, res) => {
     const userId = req.params.id
     const {username, password} = req.body
 
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
     const userExists = await Student.findOne({username})
     const user = await Student.findById(userId)
 
@@ -194,8 +210,6 @@ exports.addStudent = async (req, res) => {
     if (!user) return res.json({message: "Student not found"})
     if (user.status !== 'created') return res.json({message: "Student already added"})
 
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
 
     try {
         const updateUser = await Student.findOneAndUpdate(
@@ -203,6 +217,7 @@ exports.addStudent = async (req, res) => {
             {username, password: hashedPassword, status: 'added'},
             {new: true}
         )
+
         await updateUser.save()
         res.json({updateUser})
     } catch (err) {
@@ -217,9 +232,10 @@ exports.getClasses = async (req, res) => {
                 path: 'students',
             },
             {
-                path:'schedule'
+                path: 'schedule'
             }
         ])
+
         res.json({classes})
     } catch (err) {
         console.log(err)
@@ -228,6 +244,7 @@ exports.getClasses = async (req, res) => {
 
 exports.getClassById = async (req, res) => {
     const classId = req.params.id
+
     try {
         const classInfo = await Class.findById(classId)
         res.json({classInfo})
