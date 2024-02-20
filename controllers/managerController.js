@@ -53,11 +53,15 @@ exports.getClassById = async (req, res) => {
             },
             {
                 path: 'schedule',
-                select: ['year', 'month', 'calendar', 'lessons', 'selectedLessonDays']
+                select: ['year', 'month', 'calendar', 'lessons', 'lessonDays', 'numberOfLessons']
             },
             {
                 path: 'students',
-                select: ['name', 'surname', 'lastname', 'attendance', 'blocked', 'payment']
+                select: ['name', 'surname', 'lastname', 'lessons', 'blocked', 'payments'],
+                populate:['lessons']
+            },
+            {
+                path: 'lessons'
             }
         ])
         res.json({classInfo})

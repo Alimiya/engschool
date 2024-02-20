@@ -34,7 +34,7 @@
                             <div id="calendar" class="calendar"></div>
                         </div>
 
-                        <input  id="lessonDays" name="lessonDays" type="hidden">
+                        <input  id="lessonDays" name="lessonDays">
                         <input type="hidden" id="scheduleId" name="classScheduleId">
 
                         <button type="submit" class="w-100 btn btn-lg btn-primary mb-2">Create</button>
@@ -153,9 +153,11 @@
                 const td = document.createElement('td')
                 td.textContent = day ? day : ''
                 td.classList.add('calendar-day')
-                td.addEventListener('click', function() {
-                    handleCalendarDayClick(td)
-                })
+                if (day) {
+                    td.addEventListener('click', function() {
+                        handleCalendarDayClick(td)
+                    })
+                }
                 weekRow.appendChild(td)
             })
             tbody.appendChild(weekRow)
@@ -166,15 +168,31 @@
     }
 
     function handleCalendarDayClick(td) {
-        const lessonDaysInput = document.getElementById('lessonDays');
-        const selectedDay = td.textContent.trim();
-        let lessonDaysArray = lessonDaysInput.value ? JSON.parse(lessonDaysInput.value) : [];
+        const lessonDaysInput = document.getElementById('lessonDays')
+        const selectedDay = td.textContent.trim()
+        let lessonDaysArray = lessonDaysInput.value ? JSON.parse(lessonDaysInput.value) : []
 
-        if (!lessonDaysArray.includes(selectedDay)) {
-            lessonDaysArray.push(selectedDay);
-            lessonDaysInput.value = JSON.stringify(lessonDaysArray);
+        if (lessonDaysArray.includes(selectedDay)) {
+            lessonDaysArray = lessonDaysArray.filter(day => day !== selectedDay)
+            lessonDaysInput.value = JSON.stringify(lessonDaysArray)
+            td.classList.remove('selected-day')
+        } else {
+            lessonDaysArray.push(selectedDay)
+            lessonDaysInput.value = JSON.stringify(lessonDaysArray)
+            td.classList.add('selected-day')
         }
     }
 </script>
+<style>
+    .calendar-day:hover:not(.selected-day) {
+        background-color: grey
+        cursor: pointer
+    }
+
+    .selected-day {
+        background-color: lightblue !important
+    }
+</style>
+</style>
 </body>
 </html>

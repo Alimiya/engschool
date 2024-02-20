@@ -70,7 +70,7 @@ exports.getCurrentSchedule = async (req, res) => {
     const {classId, year, month} = req.params
 
     try {
-        const schedule = await ClassSchedule.findOne({ classId, year, month })
+        const schedule = await ClassSchedule.findOne({ classId, year, month }).populate('lessons')
         res.json(schedule)
     } catch (err) {
         console.log(err)
@@ -78,22 +78,22 @@ exports.getCurrentSchedule = async (req, res) => {
 }
 
 exports.selectLessonDays = async (req, res) => {
-    const { classScheduleId, lessonDays} = req.body
+    const { classScheduleId, lessonDays } = req.body
 
     try {
         const schedule = await ClassSchedule.findById(classScheduleId)
+        const parsedLessonDays = JSON.parse(lessonDays)
 
         if (!schedule) return res.json({ message: 'Class schedule not found' })
-        console.log(lessonDays)
-        console.log(lessonDays.length)
-        console.log(schedule.numberOfLessons)
-        if (lessonDays.length !== schedule.numberOfLessons) return res.json({ message: 'You exceeded the number of lessons' })
+        if (!Array.isArray(parsedLessonDays)) return res.json({ message: 'Invalid lesson days format' })
+        if (parsedLessonDays.length !== schedule.numberOfLessons) return res.json({ message: 'You exceeded the number of lessons' })
 
-        schedule.lessonDays = lessonDays
+        schedule.lessonDays = parsedLessonDays
         await schedule.save()
 
-        return res.json({ message: 'Lesson days selected successfully', schedule })
+        return res.json({ message: 'Lesson days selected successfully'})
     } catch (err) {
         console.log(err)
+        return res.status(500).json({ message: 'Internal server error' })
     }
 }

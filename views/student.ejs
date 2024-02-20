@@ -10,6 +10,20 @@
         .hidden{
             display: none
         }
+         .calendar-day:hover {
+             background-color: #f0f0f0;
+             cursor: pointer;
+         }
+        .has-lesson {
+            color: red;
+            cursor: pointer;
+        }
+        .calendar-day:hover span {
+            color: red;
+        }
+        .has-lesson:hover span {
+            color: blue;
+        }
     </style>
 </head>
 <body>
@@ -133,8 +147,9 @@
             .then(function (response) {
                 const calendarData = response.data.calendar
                 const lessons = response.data.lessons.length
+                const lessonDays = response.data.lessonDays
 
-                renderCalendar(calendarData, lessons)
+                renderCalendar(calendarData, lessons, lessonDays)
 
             })
             .catch(function (err) {
@@ -150,7 +165,7 @@
         payForm.action = `/api/student/${studentId}/${year}/${month}`
     }
 
-    function renderCalendar(calendarData,lessons) {
+    function renderCalendar(calendarData, lessons, lessonDays) {
         const calendarElement = document.getElementById('calendar')
         calendarElement.innerHTML = ''
 
@@ -180,9 +195,10 @@
                 if (day) {
                     td.classList.add('lesson-present')
                 }
-                td.addEventListener('click', function () {
-                    handleCalendarDayClick(day)
-                })
+                if (lessonDays.includes(day)) {
+                    td.classList.add('has-lesson');
+                }
+
                 weekRow.appendChild(td)
             })
             tbody.appendChild(weekRow)
@@ -229,10 +245,6 @@
                 })
             }
         })
-    }
-
-    function handleCalendarDayClick(day) {
-        alert(`You clicked on ${day}`)
     }
 
     function extractIdsFromUrl(url) {

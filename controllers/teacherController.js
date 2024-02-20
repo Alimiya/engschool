@@ -129,3 +129,21 @@ exports.addStudentsToClass = async (req, res) => {
         console.log(err)
     }
 }
+exports.getStudentsByClass = async (req, res) => {
+    const classId = req.params.id
+
+    try {
+        const students = await Class.findById(classId, { students:1, lessons:1, _id:0}).populate([
+            {
+                path:'students'
+            },
+            {
+                path:'lessons'
+            }
+        ])
+        res.json(students)
+    } catch (err) {
+        console.log(err)
+    }
+}
+

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="text-center">
+<div class="container py-5">
+    <div class="card mx-auto" style="max-width: 400px">
+        <div class="card-header">
+            <h3 class="text-center">Add Attendance</h3>
+        </div>
+        <div class="card-body">
+            <form id="attendanceForm" method="post" class="text-center">
+                <div class="mb-3" id="studentSelectWrapper">
+                    <label for="studentSelect" class="form-label">Select Students:</label>
+                    <select class="form-select" id="studentSelect" name="studentIds[]" multiple required>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" id="submitButton" disabled>Create</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    //router.post('/:id/:year/:month/:day', Controller.collectAttendance)
+    async function getStudents(classId) {
+        try {
+            const url = window.location.href
+            const {classId} = extractIdsFromUrl(url)
+            const response = await axios.get(`http://localhost:3000/api/teacher/class/${classId}/students`)
+            return response.data.students
+        } catch (error) {
+            console.error('Error fetching students:', error)
+            return []
+        }
+    }
+
+    function populateDropdown(selectElement, data) {
+        selectElement.innerHTML = ''
+        data.forEach(item => {
+            console.log(item)
+            const option = document.createElement('option')
+            option.text = item.name
+            option.value = item._id
+            selectElement.appendChild(option)
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        try {
+            const attendanceForm = document.getElementById('attendanceForm')
+            const studentSelect = document.getElementById('studentSelect')
+            const submitButton = document.getElementById('submitButton')
+            const studentSelectWrapper = document.getElementById('studentSelectWrapper')
+            const urlParams = new URLSearchParams(window.location.search)
+
+            const url = window.location.href
+            const {classId, year, month, day} = extractIdsFromUrl(url)
+            attendanceForm.action = `/api/lesson/${classId}/${year}/${month}/${day}`
+
+            const students = await getStudents(classId)
+            console.log(students)
+            populateDropdown(studentSelect, students)
+            studentSelectWrapper.style.display = 'block'
+
+            studentSelect.addEventListener('change', function () {
+                submitButton.disabled = !studentSelect.value.length
+            })
+        } catch (error) {
+            console.error('Error initializing page:', error)
+        }
+    })
+
+    function extractIdsFromUrl(url) {
+        const segments = url.split("/")
+        const classId = segments[8]
+        const year = segments[9]
+        const month = segments[10]
+        const day = segments[11]
+        return { classId, year, month, day }
+    }
+</script>
+</body>
+</html>

@@ -37,9 +37,6 @@
                     <select id="monthSelect" class="form-select" aria-label="Select Month">
                     </select>
                 </div>
-                <div class="col w-60">
-                    <button id="searchButton" class="btn btn-primary">Search</button>
-                </div>
             </div>
         </div>
     </div>
@@ -48,104 +45,180 @@
         <div class="card-body">
             <h5 class="card-title">Class Info</h5>
             <p class="card-text">Class Name: <span id="className"></span></p>
-            <p class="card-text">Selected Lesson Days: <span id="lessonDays"></span></p>
+            <p class="card-text">Number of lessons: <span id="numberOfLessons"></span></p>
+            <p class="card-text">Lesson Days: <span id="lessonDays"></span></p>
             <p class="card-text">Teacher: <span id="teacher"></span></p>
-            <div id="studentsList" class="mt-3">
-            </div>
+            <h5 class="card-title mt-3">Students</h5>
+            <ul id="studentsList"></ul>
+            <div id="studentDetails"></div>
+
         </div>
     </div>
 </div>
 
 <script>
-    async function getManager(){
+    function fetchManagerDataAndRenderCalendar() {
         const url = window.location.href
         const {managerId} = extractIdsFromUrl(url)
-        await axios.get(`http://localhost:3000/api/manager/${managerId}`)
-            .then(response => {
-                const managerData = response.data.manager
-                fillManagerAndClasses(managerData)
-            })
-            .catch(error => console.error('Error:', error))
-    }
-
-    function fillManagerAndClasses(managerData) {
-        document.getElementById('surname').innerText = managerData.surname
-        document.getElementById('name').innerText = managerData.name
-        document.getElementById('lastname').innerText = managerData.lastname
 
         const classSelect = document.getElementById('classSelect')
-        managerData.classes.forEach(classInfo => {
-            const option = document.createElement('option')
-            option.value = classInfo._id
-            option.textContent = classInfo.name
-            classSelect.appendChild(option)
-        })
+        classSelect.innerHTML = '<option value="" selected disabled>Select Class</option>'
+
         const yearSelect = document.getElementById('yearSelect')
-        managerData.classes.forEach(classInfo => {
+        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+
+        const monthSelect = document.getElementById('monthSelect')
+        monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+
+        axios.get(`http://localhost:3000/api/manager/${managerId}`)
+            .then(function (response) {
+                const manager = response.data.manager
+                document.getElementById('surname').innerText = manager.surname
+                document.getElementById('name').innerText = manager.name
+                document.getElementById('lastname').innerText = manager.lastname
+
+                const managerClasses = manager.classes
+                managerClasses.forEach(cls => {
+                    const option = document.createElement('option')
+                    option.value = cls._id
+                    option.innerText = cls.name
+                    classSelect.appendChild(option)
+                })
+
+                const yearsAndMonths = getUniqueYearsAndMonthsForManager(managerClasses)
+                renderYearAndMonthSelect(yearsAndMonths)
+            })
+            .catch(function (error) {
+                console.error('Error fetching manager data:', error)
+            })
+    }
+
+    function getUniqueYearsAndMonthsForManager(classes) {
+        const yearsAndMonths = {}
+        classes.forEach(cls => {
+            cls.schedule.forEach(scheduleItem => {
+                if (!yearsAndMonths[scheduleItem.year]) {
+                    yearsAndMonths[scheduleItem.year] = []
+                }
+                if (!yearsAndMonths[scheduleItem.year].includes(scheduleItem.month)) {
+                    yearsAndMonths[scheduleItem.year].push(scheduleItem.month)
+                }
+            })
+        })
+        return yearsAndMonths
+    }
+
+    function renderYearAndMonthSelect(yearsAndMonths) {
+        const yearSelect = document.getElementById('yearSelect')
+        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+        Object.keys(yearsAndMonths).forEach(year => {
             const option = document.createElement('option')
-            option.value = classInfo.schedule._id
-            option.textContent = classInfo.schedule.year
+            option.value = year
+            option.innerText = year
             yearSelect.appendChild(option)
         })
-        const monthSelect = document.getElementById('monthSelect')
-        managerData.classes.forEach(classInfo => {
-            const option = document.createElement('option')
-            option.value = classInfo.schedule._id
-            option.textContent = classInfo.schedule.month
-            monthSelect.appendChild(option)
+        yearSelect.addEventListener('change', function (event) {
+            const selectedYear = event.target.value
+            const monthSelect = document.getElementById('monthSelect')
+            monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+            if (selectedYear) {
+                yearsAndMonths[selectedYear].forEach(month => {
+                    const option = document.createElement('option')
+                    option.value = month
+                    option.innerText = getMonthName(month)
+                    monthSelect.appendChild(option)
+                })
+            }
         })
-        classSelect.addEventListener('change', getClassInfo)
     }
 
-    function showClassInfo(classInfo) {
-        document.getElementById('className').innerText = classInfo.name
-        document.getElementById('lessonDays').innerText = classInfo.schedule.selectedLessonDays
-        const fullName = `${classInfo.teacher.surname} ${classInfo.teacher.name} ${classInfo.teacher.lastname}`
-        document.getElementById('teacher').innerText = fullName
+    document.getElementById('classSelect').addEventListener('change', function (event) {
+        const selectedClassId = event.target.value
+        const selectedYear = document.getElementById('yearSelect').value
+        const selectedMonth = document.getElementById('monthSelect').value
 
-        const studentsList = document.getElementById('studentsList')
-        studentsList.innerHTML = ''
+        fetchClassInfo(selectedClassId, selectedYear, selectedMonth)
+    })
 
-        const students = classInfo.students
-        students.forEach(student => {
-            const listItem = document.createElement('div')
-            listItem.className = 'mb-2'
-            listItem.innerHTML = `
-                <strong>${student.surname} ${student.name} ${student.lastname} 0/12</strong>
-                (Payment: ${(!!student.payment)})
-            `
-            studentsList.appendChild(listItem)
-        })
+    document.getElementById('yearSelect').addEventListener('change', function (event) {
+        const selectedYear = event.target.value
+        const selectedMonth = document.getElementById('monthSelect').value
+        const selectedClassId = document.getElementById('classSelect').value
 
-        document.getElementById('classInfoCard').style.display = 'block'
-    }
+        fetchClassInfo(selectedClassId, selectedYear, selectedMonth)
+    })
 
-    function getClassInfo() {
-        const classSelect = document.getElementById('classSelect')
-        console.log(classSelect)
-        const classId = '65c5d62887def68d1738a0f3'
+    document.getElementById('monthSelect').addEventListener('change', function (event) {
+        const selectedMonth = event.target.value
+        const selectedYear = document.getElementById('yearSelect').value
+        const selectedClassId = document.getElementById('classSelect').value
 
+        fetchClassInfo(selectedClassId, selectedYear, selectedMonth)
+    })
+
+    function fetchClassInfo(classId, year, month) {
         axios.get(`http://localhost:3000/api/manager/class/${classId}`)
-            .then(response => {
+            .then(function (response) {
                 const classInfo = response.data.classInfo
-                console.log(classInfo)
-                showClassInfo(classInfo)
-            })
-            .catch(error => console.error('Error:', error))
-    }
-    document.getElementById('classSelect').addEventListener('change', getClassInfo)
+                const selectedSchedule = classInfo.schedule.find(schedule => schedule.year == year && schedule.month == month)
+                if (selectedSchedule) {
+                    console.log(selectedSchedule)
+                    document.getElementById('className').innerText = classInfo.name
+                    document.getElementById('numberOfLessons').innerText = selectedSchedule.numberOfLessons
+                    document.getElementById('lessonDays').innerText = selectedSchedule.lessonDays
+                    document.getElementById('teacher').innerText = `${classInfo.teacher.surname} ${classInfo.teacher.name} ${classInfo.teacher.lastname}`
+                    const studentsList = document.getElementById('studentsList')
+                    studentsList.innerHTML = ''
 
+                    classInfo.students.forEach(student => {
+                        const listItem = document.createElement('li')
+                        const lessonsCount = student.lessons.filter(lesson => lesson.month == month).length
+                        const paymentForMonth = student.payments.find(payment => payment.year == year && payment.month == month)
+                        const daysAttended = student.lessons.filter(lesson => lesson.month == month && lesson.year == year).map(lesson => lesson.day)
+
+                        listItem.innerText = `${student.surname} ${student.name.charAt(0)}. ${student.lastname.charAt(0)}. - ${lessonsCount}/${selectedSchedule.numberOfLessons}`
+                        listItem.classList.add('student-item')
+                        listItem.addEventListener('click', () => {
+                            displayStudentDetails(student, lessonsCount, paymentForMonth, daysAttended, month, year, selectedSchedule)
+                        })
+                        studentsList.appendChild(listItem)
+                    })
+                    document.getElementById('classInfoCard').style.display = 'block'
+                } else {
+                    document.getElementById('classInfoCard').style.display = 'none'
+                }
+            })
+            .catch(function (error) {
+                console.error('Error fetching class info:', error)
+            })
+    }
+
+    function displayStudentDetails(student, lessonsCount, paymentForMonth, daysAttended, month, year, selectedSchedule) {
+        const studentDetails = document.getElementById('studentDetails')
+        studentDetails.innerHTML = `
+        <h5>Student Details</h5>
+        <p>Name: ${student.surname} ${student.name} ${student.lastname}</p>
+        <p>Lessons attended: ${lessonsCount}/${selectedSchedule.numberOfLessons}</p>
+        <p>Days attended: ${daysAttended.join(', ')}</p>
+        <p>Payment ${paymentForMonth ? paymentForMonth.payment : 'false'}</p>
+    `
+    }
 
     function extractIdsFromUrl(url) {
-        const segments = url.split("/")
+        const segments = url.split('/')
         const managerId = segments[5]
-        return { managerId}
+        return {managerId}
+    }
+
+    function getMonthName(month) {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        return monthNames[month - 1] || ''
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        getManager()
-        getClassInfo()
+        fetchManagerDataAndRenderCalendar()
     })
+
 </script>
 
 

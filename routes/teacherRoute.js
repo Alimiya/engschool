@@ -9,6 +9,7 @@ router.post('/student/create', verifyTeacherToken(TEACHER_TOKEN_SECRET), Control
 router.get('/students', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getStudents)
 
 router.get('/class/:id', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getClassById)
+router.get('/class/:id/students', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getStudentsByClass)
 router.post('/class/create', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.createClass)
 router.post('/class/add/students', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.addStudentsToClass)
 router.get('/classes', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getClasses)

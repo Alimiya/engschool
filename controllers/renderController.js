@@ -49,3 +49,11 @@ exports.createClassSchedule = async (req, res) => {
 exports.addLessons = async (req, res) => {
     res.render('components/addLessonDays')
 }
+
+exports.getAttendance = async (req, res) => {
+    res.render('components/getAttendance')
+}
+
+exports.updateAttendance = async (req, res) => {
+    res.render('components/updateAttendance')
+}
