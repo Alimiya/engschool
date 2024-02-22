@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs")
+const bot = require('../telegram/bot')
 const {
     generateAdminToken,
     generateManagerToken,
@@ -24,6 +25,7 @@ exports.login = async (req, res) => {
             if (validPassword) {
                 userId = user._id
                 token = generateAdminToken(user)
+                bot.sendMessage(user.chat_id, `Добро пожаловать ${user.username}`)
                 return handleLoginSuccess(res, token, 'admin', userId)
             }
         }
@@ -33,7 +35,9 @@ exports.login = async (req, res) => {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
                 userId = user._id
+                console.log(user)
                 token = generateManagerToken(user)
+                bot.sendMessage(user.chat_id, `Добро пожаловать ${user.username}`)
                 return handleLoginSuccess(res, token, 'manager', userId)
             }
         }
@@ -64,6 +68,12 @@ exports.login = async (req, res) => {
         return res.status(500).json({message: "Internal server error"})
     }
 }
+function handleLoginSuccess(res, token, role, userId) {
+    res.cookie(role, token, {maxAge: process.env.TOKEN_EXPIRE * 100000})
+    res.header('Authorization', `Bearer ${token}`)
+
+    res.redirect(`/profile/${role}/${userId}`)
+}
 
 exports.logout = async (req, res) => {
     try {
@@ -78,9 +88,3 @@ exports.logout = async (req, res) => {
     }
 }
 
-function handleLoginSuccess(res, token, role, userId) {
-    res.cookie(role, token, {maxAge: process.env.TOKEN_EXPIRE * 100000})
-    res.header('Authorization', `Bearer ${token}`)
-
-    res.redirect(`/profile/${role}/${userId}`)
-}

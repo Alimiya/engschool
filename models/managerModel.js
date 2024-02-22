@@ -7,6 +7,7 @@ const managerSchema = mongoose.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
     blocked:{type:Boolean,default:false},
+    chat_id:{type:Number, unique: true},
     role: { type: String, default: 'manager'},
     classes:[{type:mongoose.Schema.Types.ObjectId,ref:'Class'}],
 })
