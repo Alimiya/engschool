@@ -23,6 +23,7 @@ router.post('/student/block/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controll
 router.post('/student/unblock/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.unblockStudent)
 router.post('/student/add/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.addStudent)
 router.get('/students', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getStudents)
+router.get('/students/created', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getCreatedStudents)
 
 router.get('/class/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getClassById)
 router.get('/classes', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getClasses)

@@ -6,6 +6,7 @@
     <title>Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
     <style>
         .scrollable-table-wrapper {
             overflow-x: auto
@@ -57,6 +58,8 @@
     </button>
     <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/admin/teacher/create'">Create Teacher
     </button>
+    <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/admin/student/add'">Add Student
+    </button>
     <form action="/api/auth/logout" method="post">
         <button class="btn btn-danger mt-2">Logout</button>
     </form>
@@ -91,7 +94,6 @@
             <thead>
             <tr>
                 <th scope="col">Full Name</th>
-                <th scope="col">Creation</th>
                 <th scope="col">Payment</th>
                 <th scope="col">Status</th>
                 <th scope="col">Action</th>
@@ -104,228 +106,290 @@
 </div>
 
 <script>
-    let originalManagersData = []
-    let originalTeachersData = []
-    let originalClassesData = []
-
-    async function getManagers() {
-        const response = await axios.get(`http://localhost:3000/api/admin/managers`)
-        originalManagersData = response.data.managers
-        filterManagers()
-
-    }
-
-    async function getTeachers() {
-        const response = await axios.get(`http://localhost:3000/api/admin/teachers`)
-        originalTeachersData = response.data.teachers
-        filterTeachers()
-
-    }
-
-    async function getClasses() {
-        const allClassesSelect = document.getElementById('allClasses')
-        const response = await axios.get(`http://localhost:3000/api/admin/classes`)
-        originalClassesData = response.data.classes
-        filterClasses()
-        originalClassesData.forEach(classs => {
-            const option = document.createElement('option')
-            option.value = classs._id
-            option.textContent = classs.name
-            allClassesSelect.appendChild(option)
-        })
-    }
-
-    function filterManagers() {
-        const searchQuery = searchInput.value.trim().toLowerCase()
-        const statusValue = statusSelect.value
-        console.log(statusValue)
-
-        const filteredManagers = originalManagersData.filter(manager => {
-            const fullName = `${manager.surname} ${manager.name} ${manager.lastname}`.toLowerCase()
-            const isMatch = fullName.includes(searchQuery)
-
-            if (statusValue === "blocked") {
-                return manager.blocked === true && isMatch
-            } else if (statusValue === "unblocked") {
-                return manager.blocked === false && isMatch
-            } else {
-                return isMatch
-            }
-        })
-
-        renderManagers(filteredManagers)
-    }
-
-    function filterTeachers() {
-        const searchQuery = searchInput.value.trim().toLowerCase()
-        const statusValue = statusSelect.value
-        const filteredTeachers = originalTeachersData.filter(teacher => {
-            const fullName = `${teacher.surname} ${teacher.name} ${teacher.lastname}`.toLowerCase()
-            const isMatch = fullName.includes(searchQuery)
-
-            if (statusValue === "blocked") {
-                return teacher.blocked === true && isMatch
-            } else if (statusValue === "unblocked") {
-                return teacher.blocked === false && isMatch
-            } else {
-                return isMatch
-            }
-        })
-        renderTeachers(filteredTeachers)
-    }
-
-    function filterClasses() {
-        const searchQuery = searchInput.value.trim().toLowerCase()
-        const paymentValue = paymentStatusSelect.value
-        const statusValue = classStatusSelect.value
-
-        const filteredClasses = originalClassesData.filter(classs =>
-            classs.students.some(student => {
-                console.log(student)
-                const fullName = `${student.surname} ${student.name} ${student.lastname}`.toLowerCase()
-                const isMatch = fullName.includes(searchQuery)
-
-                const isBlockedMatch = statusValue === "blocked" ? student.blocked === true : statusValue === "unblocked" ? student.blocked === false : true
-                const isPaymentMatch = paymentValue === "paid" ? student.payment === true : paymentValue === "non-paid" ? student.payment === false : true
-
-                return isMatch && isBlockedMatch && isPaymentMatch
-            })
-        )
-        renderClasses(filteredClasses)
-    }
-
-    function renderManagers(managers) {
-        const managerTableBody = document.getElementById('managerTableBody')
-        managerTableBody.innerHTML = ''
-
-        managers.forEach(manager => {
-            const tr = document.createElement('tr')
-            tr.innerHTML = `
-            <td>${manager.surname} ${manager.name} ${manager.lastname}</td>
-            <td>${manager.blocked}</td>
-            <td>
-                ${manager.blocked === false ?
-                `<form action="/api/admin/manager/block/${manager._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
-                `<form action="/api/admin/manager/unblock/${manager._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
-            </td>
-        `
-            managerTableBody.appendChild(tr)
-        })
-    }
-
-    function renderTeachers(teachers) {
-        const teacherTableBody = document.getElementById('teacherTableBody')
-        teacherTableBody.innerHTML = ''
-
-        teachers.forEach(teacher => {
-            const tr = document.createElement('tr')
-            tr.innerHTML = `
-            <td>${teacher.surname} ${teacher.name} ${teacher.lastname}</td>
-            <td>${teacher.blocked}</td>
-            <td>
-                ${teacher.blocked === false ?
-                `<form action="/api/admin/teacher/block/${teacher._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
-                `<form action="/api/admin/teacher/unblock/${teacher._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
-            </td>
-        `
-            teacherTableBody.appendChild(tr)
-        })
-    }
-
-    function renderClasses(classesData) {
-        const studentTableBody = document.getElementById('studentTableBody')
-        studentTableBody.innerHTML = ''
-        classesData.forEach(classs => {
-            classs.students.forEach(student => {
-                const tr = document.createElement('tr')
-                tr.innerHTML = `
-                    <td>${student.surname} ${student.name} ${student.lastname}</td>
-                    <td>${student.status}</td>
-                    <td>${student.payment}</td>
-                    <td>${student.blocked}</td>
-                    <td>
-                    ${student.blocked === false ?
-                    `<form action="/api/admin/student/block/${student._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
-                    `<form action="/api/admin/student/unblock/${student._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
-                    </td>
-                    <td>
-                    ${student.status === "created" ?
-                    `<button class="btn btn-success" type="submit" onclick="window.location.href='/profile/admin/student/add/${student._id}'">Add</button>` :
-                    ``}
-                    </td>
-                `
-                studentTableBody.appendChild(tr)
-            })
-        })
-    }
-
-
+    const debouncedFilterData = _.debounce(filterData, 300)
     const categorySelect = document.getElementById('categorySelect')
-    const classStatusSelect = document.getElementById('classStatusSelect')
-    const paymentStatusSelect = document.getElementById('paymentStatusSelect')
-    const allClassesSelect = document.getElementById('allClasses')
     const statusSelect = document.getElementById('statusSelect')
     const classOptions = document.getElementById('classOptions')
+    const classSelect = document.getElementById('classSelect')
+    const yearSelect = document.getElementById('yearSelect')
+    const monthSelect = document.getElementById('monthSelect')
+    const classStatusSelect = document.getElementById('classStatusSelect')
+    const paymentStatusSelect = document.getElementById('paymentStatusSelect')
+    const searchInput = document.getElementById('searchInput')
     const managerTable = document.getElementById('managerTable')
     const teacherTable = document.getElementById('teacherTable')
     const studentTable = document.getElementById('studentTable')
 
-    categorySelect.addEventListener('change', function () {
+    let originalData = []
+
+    async function fetchData() {
+        let url = ''
+
+        if (categorySelect.value === 'manager') {
+            url = 'http://localhost:3000/api/admin/managers'
+        } else if (categorySelect.value === 'teacher') {
+            url = 'http://localhost:3000/api/admin/teachers'
+        } else if (categorySelect.value === 'class') {
+            url = 'http://localhost:3000/api/admin/classes'
+        }
+
+        const response = await axios.get(url)
+        originalData = response.data
+        if (categorySelect.value === 'class') {
+            fillClassSelect(originalData)
+        }
+        filterData()
+    }
+
+    classStatusSelect.addEventListener('change', debouncedFilterData)
+    paymentStatusSelect.addEventListener('change', debouncedFilterData)
+
+    function filterData() {
+        const searchQuery = searchInput.value.trim().toLowerCase()
+
+        const filteredData = originalData.flatMap(item => {
+            if (categorySelect.value === 'class') {
+                return item.students.filter(student => {
+                    const paymentForMonth = student.payments.find(payment => payment.year == yearSelect.value && payment.month == monthSelect.value)
+                    const fullName = `${student.surname} ${student.name} ${student.lastname}`.toLowerCase()
+                    console.log(paymentForMonth)
+                    const isMatch = fullName.includes(searchQuery)
+
+                    const classStatusValue = classStatusSelect.value
+                    const paymentStatusValue = paymentStatusSelect.value
+                    let isClassStatusMatch = true
+                    let isPaymentStatusMatch = true
+
+                    if (classStatusValue === 'blocked') {
+                        isClassStatusMatch = student.blocked === true
+                    } else if (classStatusValue === 'unblocked') {
+                        isClassStatusMatch = student.blocked === false
+                    }
+
+                    if (paymentStatusValue === 'paid') {
+                        isPaymentStatusMatch = paymentForMonth && paymentForMonth.payment !== undefined;
+                    } else if (paymentStatusValue === 'non-paid') {
+                        isPaymentStatusMatch = !paymentForMonth || paymentForMonth.payment === undefined;
+                    }
+
+                    return isMatch && isClassStatusMatch && isPaymentStatusMatch
+
+                })
+            } else {
+                const fullName = `${item.surname} ${item.name} ${item.lastname}`.toLowerCase()
+                const isMatch = fullName.includes(searchQuery)
+                const StatusValue = statusSelect.value
+
+                let isStatusMatch = true
+                if (StatusValue === 'blocked') {
+                    isStatusMatch = item.blocked === true
+                } else if (StatusValue === 'unblocked') {
+                    isStatusMatch = item.blocked === false
+                }
+                return isMatch && isStatusMatch ? [item] : []
+            }
+        })
+
+        console.log(filteredData)
+        if (categorySelect.value === 'class') {
+            const selectedClassId = classSelect.value
+            const selectedYear = yearSelect.value
+            const selectedMonth = monthSelect.value
+            renderStudentTable(selectedClassId, selectedYear, selectedMonth, filteredData)
+        } else if (categorySelect.value === 'teacher') {
+            renderTeacherTable(filteredData)
+        } else if (categorySelect.value === 'manager') {
+            renderManagerTable(filteredData) // Обновлено
+        }
+    }
+
+    function fillClassSelect(data) {
+        classSelect.innerHTML = '<option value="" selected disabled>Select Class</option>'
+        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+        monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+
+        data.forEach(item => {
+            const option = document.createElement('option')
+            option.value = item._id
+            option.textContent = item.name
+            classSelect.appendChild(option)
+        })
+
+        classSelect.addEventListener('change', () => {
+            const selectedClassId = classSelect.value
+            const selectedClass = data.find(item => item._id === selectedClassId)
+            if (selectedClass) {
+                const yearsAndMonths = getUniqueYearsAndMonthsForClass(selectedClass)
+                renderYearAndMonthSelect(yearsAndMonths)
+            }
+        })
+    }
+
+    function getUniqueYearsAndMonthsForClass(selectedClass) {
+        const yearsAndMonths = {}
+        selectedClass.schedule.forEach(scheduleItem => {
+            if (!yearsAndMonths[scheduleItem.year]) {
+                yearsAndMonths[scheduleItem.year] = []
+            }
+            if (!yearsAndMonths[scheduleItem.year].includes(scheduleItem.month)) {
+                yearsAndMonths[scheduleItem.year].push(scheduleItem.month)
+            }
+        })
+        return yearsAndMonths
+    }
+
+    function renderYearAndMonthSelect(yearsAndMonths) {
+        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+        monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+
+        Object.keys(yearsAndMonths).forEach(year => {
+            const option = document.createElement('option')
+            option.value = year
+            option.textContent = year
+            yearSelect.appendChild(option)
+        })
+
+        yearSelect.addEventListener('change', () => {
+            const selectedYear = yearSelect.value
+            const selectedMonths = yearsAndMonths[selectedYear] || []
+            monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+            selectedMonths.forEach(month => {
+                const option = document.createElement('option')
+                option.value = month
+                option.textContent = getMonthName(month)
+                monthSelect.appendChild(option)
+            })
+        })
+    }
+
+    classSelect.addEventListener('change', () => {
+        const selectedClassId = classSelect.value
+        const selectedYear = yearSelect.value
+        const selectedMonth = monthSelect.value
+        if (selectedClassId && selectedYear && selectedMonth) {
+            renderStudentTable(selectedClassId, selectedYear, selectedMonth)
+        }
+    })
+
+    yearSelect.addEventListener('change', () => {
+        const selectedClassId = classSelect.value
+        const selectedYear = yearSelect.value
+        const selectedMonth = monthSelect.value
+        if (selectedClassId && selectedYear && selectedMonth) {
+            renderStudentTable(selectedClassId, selectedYear, selectedMonth)
+        }
+    })
+
+    monthSelect.addEventListener('change', () => {
+        const selectedClassId = classSelect.value
+        const selectedYear = yearSelect.value
+        const selectedMonth = monthSelect.value
+        if (selectedClassId && selectedYear && selectedMonth) {
+            renderStudentTable(selectedClassId, selectedYear, selectedMonth)
+        }
+    })
+
+    function renderManagerTable(data) {
+        managerTable.style.display = 'table'
+        teacherTable.style.display = 'none'
+        studentTable.style.display = 'none'
+
+        const managerTableBody = document.getElementById('managerTableBody')
+        managerTableBody.innerHTML = ''
+
+        data.forEach(manager => {
+            const tr = document.createElement('tr')
+            tr.innerHTML = `
+                <td>${manager.surname} ${manager.name} ${manager.lastname}</td>
+                <td>${manager.blocked}</td>
+                <td>
+                    ${manager.blocked === false ?
+                `<form action="/api/admin/manager/block/${manager._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
+                `<form action="/api/admin/manager/unblock/${manager._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
+                </td>
+            `
+            managerTableBody.appendChild(tr)
+        })
+    }
+
+    function renderTeacherTable(data) {
+        teacherTable.style.display = 'table'
+        managerTable.style.display = 'none'
+        studentTable.style.display = 'none'
+
+        const teacherTableBody = document.getElementById('teacherTableBody')
+        teacherTableBody.innerHTML = ''
+
+        data.forEach(teacher => {
+            const tr = document.createElement('tr')
+            tr.innerHTML = `
+                <td>${teacher.surname} ${teacher.name} ${teacher.lastname}</td>
+                <td>${teacher.blocked}</td>
+                <td>
+                    ${teacher.blocked === false ?
+                `<form action="/api/admin/teacher/block/${teacher._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
+                `<form action="/api/admin/teacher/unblock/${teacher._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
+                </td>
+            `
+            teacherTableBody.appendChild(tr)
+        })
+    }
+
+    async function renderStudentTable(classId, year, month, data) {
+        console.log(data)
+        console.log(classId, year, month)
+        teacherTable.style.display = 'none'
+        managerTable.style.display = 'none'
+        studentTable.style.display = 'table'
+        const url = `http://localhost:3000/api/admin/class/${classId}`
+        const response = await axios.get(url)
+        const classData = response.data
+        const students = data || classData.students
+
+        const studentTableBody = document.getElementById('studentTableBody')
+        studentTableBody.innerHTML = ''
+
+        students.forEach(student => {
+            const paymentForMonth = student.payments.find(payment => payment.year == year && payment.month == month)
+            const tr = document.createElement('tr')
+            tr.innerHTML = `
+            <td>${student.surname} ${student.name} ${student.lastname}</td>
+            <td>
+                ${paymentForMonth ? paymentForMonth.payment : 'false'}
+            </td>
+            <td>${student.blocked}</td>
+            <td>
+                    ${student.blocked === false ?
+                `<form action="/api/admin/student/block/${student._id}" method="post"><button class="btn btn-danger" type="submit">Block</button></form>` :
+                `<form action="/api/admin/student/unblock/${student._id}" method="post"><button class="btn btn-success" type="submit">Unblock</button></form>`}
+                </td>
+        `
+            studentTableBody.appendChild(tr)
+        })
+    }
+
+    categorySelect.addEventListener('change', () => {
         if (categorySelect.value === 'class') {
             classOptions.style.display = 'block'
-            studentTable.style.display = 'block'
+            studentTable.style.display = 'table'
             statusSelect.style.display = 'none'
-            teacherTable.style.display = 'none'
-            managerTable.style.display = 'none'
-        } else if (categorySelect.value === 'manager') {
-            statusSelect.style.display = 'block'
-            managerTable.style.display = 'block'
-            classOptions.style.display = 'none'
-            studentTable.style.display = 'none'
-            teacherTable.style.display = 'none'
+            fetchData()
         } else {
-            statusSelect.style.display = 'block'
-            teacherTable.style.display = 'block'
             classOptions.style.display = 'none'
-            studentTable.style.display = 'none'
-            managerTable.style.display = 'none'
+            fetchData()
         }
     })
 
-    statusSelect.addEventListener('change', function () {
-        const selectedCategory = categorySelect.value
+    statusSelect.addEventListener('change', debouncedFilterData)
+    searchInput.addEventListener('input', debouncedFilterData)
 
-        if (selectedCategory === 'manager') {
-            filterManagers()
-        } else if (selectedCategory === 'teacher') {
-            filterTeachers()
-        }
-    })
+    function getMonthName(month) {
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        return monthNames[month - 1] || ''
+    }
 
-    classStatusSelect.addEventListener('change', function () {
-        filterClasses()
-    })
-    paymentStatusSelect.addEventListener('change', function () {
-        filterClasses()
-    })
-    const searchInput = document.getElementById('searchInput')
-    searchInput.addEventListener('input', () => {
-        console.log("Input value:", searchInput.value)
-
-        const selectedCategory = categorySelect.value
-
-        if (selectedCategory === 'manager') {
-            filterManagers()
-        } else if (selectedCategory === 'teacher') {
-            filterTeachers()
-        } else if (selectedCategory === 'class') {
-            filterClasses()
-        }
-    })
     document.addEventListener('DOMContentLoaded', () => {
-        getManagers()
-        getTeachers()
-        getClasses()
+        fetchData()
     })
 </script>
 </body>

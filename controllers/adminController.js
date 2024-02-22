@@ -7,7 +7,7 @@ const Class = require('../models/classModel')
 exports.getManagers = async (req, res) => {
     try {
         const managers = await Manager.find({})
-        res.json({managers})
+        res.json(managers)
     } catch (err) {
         console.log(err)
     }
@@ -134,7 +134,7 @@ exports.unblockStudent = async (req, res) => {
 exports.getTeachers = async (req, res) => {
     try {
         const teachers = await Teacher.find({})
-        res.json({teachers})
+        res.json(teachers)
     } catch (err) {
         console.log(err)
     }
@@ -185,6 +185,15 @@ exports.getStudents = async (req, res) => {
     }
 }
 
+exports.getCreatedStudents = async (req, res) => {
+    try {
+        const students = await Student.find({status: 'created'})
+        res.json({students})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 exports.getStudentById = async (req, res) => {
     const studentId = req.params.id
 
@@ -197,8 +206,7 @@ exports.getStudentById = async (req, res) => {
 }
 
 exports.addStudent = async (req, res) => {
-    const userId = req.params.id
-    const {username, password} = req.body
+    const {userId, username, password} = req.body
 
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
@@ -236,7 +244,7 @@ exports.getClasses = async (req, res) => {
             }
         ])
 
-        res.json({classes})
+        res.json(classes)
     } catch (err) {
         console.log(err)
     }
@@ -246,8 +254,15 @@ exports.getClassById = async (req, res) => {
     const classId = req.params.id
 
     try {
-        const classInfo = await Class.findById(classId)
-        res.json({classInfo})
+        const classInfo = await Class.findById(classId).populate([
+            {
+                path: 'students',
+            },
+            {
+                path: 'schedule'
+            }
+        ])
+        res.json(classInfo)
     } catch (err) {
         console.log(err)
     }
