@@ -9,10 +9,12 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body class="text-center">
+<%- include('header') %>
 <div class="container py-5">
     <div class="card mx-auto" style="max-width: 400px">
         <div class="card-header">
             <h3 class="text-center">Update Attendance</h3>
+            <h4 class="text-center" id="date"></h4>
         </div>
         <div class="card-body">
             <form id="attendanceForm" method="post" class="text-center">
@@ -26,6 +28,16 @@
         </div>
     </div>
 </div>
+<div class="container">
+    <div class="card mx-auto">
+        <div class="card-header">
+            <h3>Attended students</h3>
+        </div>
+        <div class="card-body">
+            <ul id="studentsList" class="list-group"></ul>
+        </div>
+    </div>
+</div>
 <script>
     async function getStudents(classId) {
         try {
@@ -33,6 +45,18 @@
             const {classId} = extractIdsFromUrl(url)
             const response = await axios.get(`http://localhost:3000/api/teacher/class/${classId}/students`)
             return response.data.students
+        } catch (error) {
+            console.error('Error fetching students:', error)
+            return []
+        }
+    }
+
+    async function getLesson() {
+        try {
+            const url = window.location.href
+            const { classId, year, month, day } = extractIdsFromUrl(url)
+            const response = await axios.get(`http://localhost:3000/api/lesson/${classId}/${year}/${month}/${day}`)
+            return response.data
         } catch (error) {
             console.error('Error fetching students:', error)
             return []
@@ -59,13 +83,16 @@
             const studentSelect = document.getElementById('studentSelect')
             const submitButton = document.getElementById('submitButton')
             const studentSelectWrapper = document.getElementById('studentSelectWrapper')
+            const date = document.getElementById('date')
 
             const url = window.location.href
             const { classId, year, month, day } = extractIdsFromUrl(url)
+            date.innerText = `${year}/${month}/${day}`
 
             attendanceForm.action = `/api/lesson/update/${classId}/${year}/${month}/${day}`
 
             const students = await getStudents(classId)
+            const lesson = await getLesson()
 
             const urlParams = new URLSearchParams(window.location.search)
             const selectedValues = urlParams.getAll('studentIds[]')
@@ -76,8 +103,18 @@
             studentSelect.addEventListener('change', function () {
                 submitButton.disabled = !studentSelect.value.length
             })
-        } catch (error) {
-            console.error('Error initializing page:', error)
+
+            const studentsList = document.getElementById('studentsList')
+            studentsList.innerHTML = ''
+            lesson.students.forEach(student => {
+                const listItem = document.createElement('p')
+                listItem.innerText = `${student.name}`
+                listItem.classList.add('list-group-item-start')
+                studentsList.appendChild(listItem)
+            })
+
+        } catch (err) {
+            console.log(err)
         }
     })
 

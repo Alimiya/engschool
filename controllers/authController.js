@@ -25,7 +25,8 @@ exports.login = async (req, res) => {
             if (validPassword) {
                 userId = user._id
                 token = generateAdminToken(user)
-                bot.sendMessage(user.chat_id, `Добро пожаловать ${user.username}`)
+                const currentDate = new Date().toLocaleString()
+                if (user.chat_id) await bot.sendMessage(user.chat_id, `Добро пожаловать Администратор! Вы успешно вошли в систему был ${currentDate}`)
                 return handleLoginSuccess(res, token, 'admin', userId)
             }
         }
@@ -37,7 +38,8 @@ exports.login = async (req, res) => {
                 userId = user._id
                 console.log(user)
                 token = generateManagerToken(user)
-                bot.sendMessage(user.chat_id, `Добро пожаловать ${user.username}`)
+                const currentDate = new Date().toLocaleString()
+                if (user.chat_id) await bot.sendMessage(user.chat_id, `Добро пожаловать Менеджер! Вы успешно вошли в систему был ${currentDate}`)
                 return handleLoginSuccess(res, token, 'manager', userId)
             }
         }

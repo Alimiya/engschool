@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-
+<%- include('components/header') %>
 <div class="container mt-4">
     <div class="card">
         <div class="card-body">
@@ -18,10 +18,6 @@
             <p class="card-text">Lastname: <span id="lastname"></span></p>
         </div>
     </div>
-
-    <form action="/api/auth/logout" method="post">
-        <button class="btn btn-danger mt-4">Logout</button>
-    </form>
 
     <div class="card mt-4">
         <div class="card-body">
@@ -162,7 +158,7 @@
                 const classInfo = response.data.classInfo
                 const selectedSchedule = classInfo.schedule.find(schedule => schedule.year == year && schedule.month == month)
                 if (selectedSchedule) {
-                    console.log(selectedSchedule)
+                    let lastSelectedItem = null
                     document.getElementById('className').innerText = classInfo.name
                     document.getElementById('numberOfLessons').innerText = selectedSchedule.numberOfLessons
                     document.getElementById('lessonDays').innerText = selectedSchedule.lessonDays
@@ -178,9 +174,40 @@
 
                         listItem.innerText = `${student.surname} ${student.name.charAt(0)}. ${student.lastname.charAt(0)}. - ${lessonsCount}/${selectedSchedule.numberOfLessons}`
                         listItem.classList.add('student-item')
+                        listItem.style.color = 'blue'
+                        listItem.style.textDecoration = 'underline'
+
+                        const payButton = document.createElement('button')
+                        payButton.innerText = 'Pay'
+                        payButton.classList.add('btn', 'btn-primary', 'mb-1')
+
+                        const space = document.createElement('span')
+                        space.innerText = ' '
+
                         listItem.addEventListener('click', () => {
+                            if (lastSelectedItem) {
+                                lastSelectedItem.style.color = 'blue'
+                            }
+                            listItem.style.color = 'red'
+                            lastSelectedItem = listItem
                             displayStudentDetails(student, lessonsCount, paymentForMonth, daysAttended, month, year, selectedSchedule)
                         })
+                        if (paymentForMonth && paymentForMonth.payment === true) {
+                            payButton.style.display = 'none'
+                        } else {
+                            payButton.addEventListener('click', (event) => {
+                                event.stopPropagation()
+                                axios.post(`http://localhost:3000/api/manager/${student._id}/${year}/${month}`)
+                                    .then(response => {
+                                        window.location.reload()
+                                    })
+                                    .catch(err => {
+                                        console.log(err)
+                                    })
+                            })
+                        }
+                        listItem.appendChild(space)
+                        listItem.appendChild(payButton)
                         studentsList.appendChild(listItem)
                     })
                     document.getElementById('classInfoCard').style.display = 'block'
@@ -200,7 +227,7 @@
         <p>Name: ${student.surname} ${student.name} ${student.lastname}</p>
         <p>Lessons attended: ${lessonsCount}/${selectedSchedule.numberOfLessons}</p>
         <p>Days attended: ${daysAttended.join(', ')}</p>
-        <p>Payment ${paymentForMonth ? paymentForMonth.payment : 'false'}</p>
+        <p>Payment: ${paymentForMonth ? paymentForMonth.payment : 'false'}</p>
     `
     }
 

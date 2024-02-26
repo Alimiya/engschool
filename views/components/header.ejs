@@ -1,0 +1,93 @@
+<% if (currentPage === 'login') { %>
+    <header class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand mx-auto" href="#">English Class</a>
+            <div class="d-flex">
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/kz.png"
+                            height="20"
+                            width="30"
+                            alt="Kazakhstan"></button>
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/us.png"
+                            height="20"
+                            width="30"
+                            alt="United States"></button>
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/ru.png"
+                            height="20"
+                            alt="Russia"></button>
+                <span class="navbar-text">&nbsp;</span>
+            </div>
+        </div>
+    </header>
+<% } else if(currentPage === 'admin' || currentPage === 'manager' || currentPage === 'teacher' || currentPage === 'student') { %>
+    <header class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand mx-auto" href="#">English Class</a>
+            <div class="d-flex">
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/kz.png"
+                            height="20"
+                            width="30"
+                            alt="Kazakhstan"></button>
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/us.png"
+                            height="20"
+                            width="30"
+                            alt="United States"></button>
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/ru.png"
+                            height="20"
+                            alt="Russia"></button>
+                <span class="navbar-text">&nbsp;</span>
+            </div>
+            <form action="/api/auth/logout" method="post">
+                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <img width="20" height="20" style="" src="https://img.icons8.com/ios/50/FF0000/exit--v1.png"
+                         alt="exit--v1"/>
+                </button>
+            </form>
+        </div>
+    </header>
+<% } else { %>
+    <header class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="goBack()">
+                <img width="20" height="20" src="https://img.icons8.com/ios/50/back--v3.png" alt="back--v3"/>
+            </button>
+            <a class="navbar-brand mx-auto" href="#">English Class</a>
+            <div class="d-flex">
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/kz.png"
+                            height="20"
+                            width="30"
+                            alt="Kazakhstan"></button>
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/us.png"
+                            height="20"
+                            width="30"
+                            alt="United States"></button>
+                <button class="nav-link btn btn-link"><img
+                            src="https://flagcdn.com/h20/ru.png"
+                            height="20"
+                            alt="Russia"></button>
+                <span class="navbar-text">&nbsp;</span>
+            </div>
+            <form action="/api/auth/logout" method="post">
+                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <img width="20" height="20" style="" src="https://img.icons8.com/ios/50/FF0000/exit--v1.png"
+                         alt="exit--v1"/>
+                </button>
+            </form>
+        </div>
+    </header>
+<% } %>
+<script>
+    function goBack() {
+        window.history.back()
+    }
+</script>

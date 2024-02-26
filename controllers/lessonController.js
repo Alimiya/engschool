@@ -116,8 +116,8 @@ exports.getLessonsByDay = async (req, res) => {
     const {year, month, day} = req.params
     const classId = req.params.id
     try {
-        const lessons = await Lesson.find({class: classId, year, month, day})
-        res.json({lessons})
+        const lesson = await Lesson.findOne({class: classId, year, month, day}).populate('students')
+        res.json(lesson)
     } catch (err) {
         console.log(err)
     }

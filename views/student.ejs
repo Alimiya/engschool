@@ -27,7 +27,7 @@
     </style>
 </head>
 <body>
-
+<%- include('components/header') %>
 <div class="container mt-5">
     <div class="card">
         <div class="card-header">
@@ -36,9 +36,6 @@
         <div class="card-body">
             <h5 class="card-title" id="studentName"></h5>
             <p class="card-text" id="studentClass" value="classId"></p>
-            <form action="/api/auth/logout" method="post">
-                <button class="btn btn-danger mt-2">Logout</button>
-            </form>
         </div>
     </div>
 

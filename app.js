@@ -58,6 +58,10 @@ bot.setMyCommands([
     {
         command: '/login',
         description: 'Login'
+    },
+    {
+        command: '/test',
+        description: 'test'
     }
 ])
 
@@ -65,11 +69,15 @@ bot.setMyCommands([
 bot.on('message', async (msg) => {
     const text = msg.text
     const chatId = msg.chat.id
+
     if (text === '/start') {
         return bot.sendMessage(chatId, `Привет, ${msg.from.first_name}!`)
     }
     if (text === '/link') {
         return bot.sendMessage(chatId, 'Ссылка на сайт')
+    }
+    if (text === '/test') {
+        return bot.sendMessage(chatId, `${msg}`)
     }
     if (text === '/login') {
         await bot.sendMessage(chatId, 'Введите логин')

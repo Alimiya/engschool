@@ -10,13 +10,14 @@
     .has-lesson {
         background-color: red !important
     }
+
     .past-lesson {
         background-color: green !important
     }
 
 </style>
 <body>
-
+<%- include('components/header') %>
 <div class="container mt-5">
     <div class="card">
         <div class="card-header">
@@ -30,19 +31,21 @@
 
     <div class="card mt-3">
         <div class="card-body">
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/student/create'">Create Student
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/student/create'">Create
+                Student
             </button>
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/create'">Create Class
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/create'">Create
+                Class
             </button>
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/schedule'">Create Schedule
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/schedule'">
+                Create Schedule
             </button>
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/lessons'">Add Lessons
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/lessons'">
+                Add/Update Lessons
             </button>
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/students'" id="addTo">Add Student to Class
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/students'"
+                    id="addTo">Add Student to Class
             </button>
-            <form action="/api/auth/logout" method="post">
-                <button class="btn btn-danger mt-2">Logout</button>
-            </form>
         </div>
     </div>
 
@@ -221,7 +224,7 @@
 
 
                 if (day && lessonDays.includes(day)) {
-                    td.addEventListener('click', function() {
+                    td.addEventListener('click', function () {
                         handleCalendarDayClick(day)
                     })
                 }
@@ -291,7 +294,7 @@
     function extractIdsFromUrl(url) {
         const segments = url.split('/')
         const teacherId = segments[5]
-        return { teacherId }
+        return {teacherId}
     }
 
     fetchTeacherDataAndRenderCalendar()
