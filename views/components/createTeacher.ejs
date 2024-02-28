@@ -17,32 +17,32 @@
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
                     <form action="/api/admin/teacher/create" method="post" class="card-body p-5 text-center">
-                        <h3 class="mb-5">Create Teacher</h3>
+                        <h3 class="mb-5" data-i18n="create-teacher"></h3>
                         <div class="form-floating mb-4">
                             <input type="text" id="surname" name="surname" class="form-control" required/>
-                            <label class="form-label" for="surname">Surname</label>
+                            <label class="form-label" for="surname" data-i18n="surname"></label>
                         </div>
 
                         <div class="form-floating mb-4">
                             <input type="text" id="name" name="name" class="form-control" required/>
-                            <label class="form-label" for="name">Name</label>
+                            <label class="form-label" for="name" data-i18n="name"></label>
                         </div>
 
                         <div class="form-floating mb-4">
                             <input type="text" id="lastname" name="lastname" class="form-control" required/>
-                            <label class="form-label" for="lastname">Lastname</label>
+                            <label class="form-label" for="lastname" data-i18n="lastname"></label>
                         </div>
 
                         <div class="form-floating mb-4">
                             <input type="text" id="username" name="username" class="form-control" required/>
-                            <label class="form-label" for="username">Username</label>
+                            <label class="form-label" for="username" data-i18n="username"></label>
                         </div>
 
                         <div class="form-floating mb-4">
                             <input type="password" id="password" name="password" class="form-control" required/>
-                            <label class="form-label" for="password">Password</label>
+                            <label class="form-label" for="password" data-i18n="password"></label>
                         </div>
-                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2">Create</button>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2" data-i18n="create"></button>
                     </form>
                 </div>
             </div>
@@ -50,4 +50,5 @@
     </div>
 </section>
 </body>
+<script src="/i18n.js"></script>
 </html>

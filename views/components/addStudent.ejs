@@ -19,7 +19,7 @@
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                 <div class="card shadow-2-strong" style="border-radius: 1rem">
                     <form action="/api/admin/student/add" method="post" class="card-body p-5 text-center" id="formContainer">
-                        <h3 class="mb-5">Add Student</h3>
+                        <h3 class="mb-5" data-i18n="add-student"></h3>
 
                         <div class="form-floating mb-4">
                             <select id="userId" name="userId" class="form-select" required></select>
@@ -27,20 +27,21 @@
 
                         <div class="form-floating mb-4">
                             <input type="text" id="username" name="username" class="form-control" required/>
-                            <label class="form-label" for="username">Username</label>
+                            <label class="form-label" for="username" data-i18n="username"></label>
                         </div>
 
                         <div class="form-floating mb-4">
                             <input type="password" id="password" name="password" class="form-control" required/>
-                            <label class="form-label" for="password">Password</label>
+                            <label class="form-label" for="password" data-i18n="password"></label>
                         </div>
-                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2">Add</button>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2" data-i18n="add"></button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<script src="/i18n.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", async () => {
         const userIdSelect = document.getElementById("userId")

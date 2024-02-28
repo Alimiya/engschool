@@ -18,48 +18,49 @@
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
                 <div class="card shadow-2-strong" style="border-radius: 1rem">
                     <form id="scheduleForm" action="/api/classschedule/create" method="post" class="card-body p-5 text-center">
-                        <h3 class="mb-5">Create Schedule</h3>
+                        <h3 class="mb-5" data-i18n="create-schedule"></h3>
                         <div class="mb-3">
-                            <label for="classSelect" class="form-label">Select Class:</label>
+                            <label for="classSelect" class="form-label" data-i18n="select-class"></label>
                             <select class="form-select" id="classSelect" name="classId" required>
                             </select>
                         </div>
 
                         <div class="form-floating mb-4">
                             <input type="number" id="year" name="year" class="form-control" required/>
-                            <label class="form-label" for="year">Year</label>
+                            <label class="form-label" for="year" data-i18n="year"></label>
                         </div>
 
                         <div class="form-floating mb-4">
                             <select id="month" name="month" class="form-control" required>
-                                <option value="1">January</option>
-                                <option value="2">February</option>
-                                <option value="3">March</option>
-                                <option value="4">April</option>
-                                <option value="5">May</option>
-                                <option value="6">June</option>
-                                <option value="7">July</option>
-                                <option value="8">August</option>
-                                <option value="9">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
+                                <option value="1" data-i18n="january"></option>
+                                <option value="2" data-i18n="february"></option>
+                                <option value="3" data-i18n="march"></option>
+                                <option value="4" data-i18n="april"></option>
+                                <option value="5" data-i18n="may"></option>
+                                <option value="6" data-i18n="june"></option>
+                                <option value="7" data-i18n="july"></option>
+                                <option value="8" data-i18n="august"></option>
+                                <option value="9" data-i18n="september"></option>
+                                <option value="10" data-i18n="october"></option>
+                                <option value="11" data-i18n="november"></option>
+                                <option value="12" data-i18n="december"></option>
                             </select>
-                            <label class="form-label" for="year">Month</label>
+                            <label class="form-label" for="year" data-i18n="month"></label>
                         </div>
 
                         <div class="form-floating mb-4">
                             <input type="number" id="numberOfLessons" name="numberOfLessons" class="form-control" min="10" max="12" required/>
-                            <label class="form-label" for="numberOfLessons">Number of Lessons (10-12)</label>
+                            <label class="form-label" for="numberOfLessons" data-i18n="number-of-lessons-10-12"></label>
                         </div>
 
-                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2">Create</button>
+                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2" data-i18n="create"></button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<script src="/i18n.js"></script>
 <script>
     async function getClasses() {
         try {

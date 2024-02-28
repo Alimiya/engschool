@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <style>
     .has-lesson {
@@ -20,31 +21,30 @@
 <%- include('components/header') %>
 <div class="container mt-5">
     <div class="card">
-        <div class="card-header">
-            Teacher Information
+        <div class="card-header" data-i18n="personal-info">
         </div>
         <div class="card-body">
             <h5 class="card-title" id="teacherName"></h5>
-            <p class="card-text" id="teacherClasses"></p>
+            <p class="card-text d-inline" data-i18n="teaching-classes"></p><span id="teacherClasses" class="d-inline-block"></span>
         </div>
     </div>
 
     <div class="card mt-3">
         <div class="card-body">
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/student/create'">Create
-                Student
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/student/create'"
+                    data-i18n="create-student">
             </button>
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/create'">Create
-                Class
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/create'"
+                    data-i18n="create-class">
             </button>
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/schedule'">
-                Create Schedule
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/schedule'"
+                    data-i18n="create-schedule">
             </button>
-            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/lessons'">
-                Add/Update Lessons
+            <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/lessons'"
+                    data-i18n="add-update-lessons">
             </button>
             <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/teacher/class/add/students'"
-                    id="addTo">Add Student to Class
+                    id="addTo" data-i18n="add-student-to-class">
             </button>
         </div>
     </div>
@@ -59,43 +59,45 @@
         <div id="calendar" class="calendar"></div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script>
-    function fetchTeacherDataAndRenderCalendar() {
+<script type="module" defer>
+</script>
+<script type="module">
+    import { i18nPromises } from '/i18n.js'
+    async function fetchTeacherDataAndRenderCalendar() {
         const url = window.location.href
-        const {teacherId} = extractIdsFromUrl(url)
+        const { teacherId } = extractIdsFromUrl(url)
 
         const classSelect = document.getElementById('classSelect')
-        classSelect.innerHTML = '<option value="" selected disabled>Select Class</option>'
+        if (classSelect.children.length === 0) {
+            classSelect.innerHTML = '<option value="" selected disabled data-i18n="select-class"></option>'
+        }
 
         const yearSelect = document.getElementById('yearSelect')
-        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+        yearSelect.innerHTML = '<option value="" selected disabled data-i18n="select-year"></option>'
 
         const monthSelect = document.getElementById('monthSelect')
-        monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+        monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
 
-        axios.get(`http://localhost:3000/api/teacher/${teacherId}`)
-            .then(function (response) {
-                const teacher = response.data.teacher[0]
-                document.getElementById('teacherName').innerText = `${teacher.surname} ${teacher.name} ${teacher.lastname}`
-                const teacherClasses = teacher.classes.map(cls => cls.name).join(', ')
-                document.getElementById('teacherClasses').innerText = `Teaching Classes: ${teacherClasses}`
+        try {
+            const response = await axios.get(`http://localhost:3000/api/teacher/${teacherId}`)
+            const teacher = response.data.teacher[0]
 
-                const classSelect = document.getElementById('classSelect')
-                teacher.classes.forEach(cls => {
-                    const option = document.createElement('option')
-                    option.value = cls._id
-                    option.innerText = cls.name
-                    classSelect.appendChild(option)
-                })
+            document.getElementById('teacherName').innerText = `${teacher.surname} ${teacher.name} ${teacher.lastname}`
+            const teacherClasses = teacher.classes.map(cls => cls.name).join(', ')
+            document.getElementById('teacherClasses').innerText = ` ${teacherClasses}`
 
-                const yearsAndMonths = getUniqueYearsAndMonthsForTeacher(teacher.classes)
-                renderYearAndMonthSelect(yearsAndMonths)
+            teacher.classes.forEach(cls => {
+                const option = document.createElement('option')
+                option.value = cls._id
+                option.innerText = cls.name
+                classSelect.appendChild(option)
             })
-            .catch(function (error) {
-                console.error('Error fetching teacher data:', error)
-            })
+
+            const yearsAndMonths = getUniqueYearsAndMonthsForTeacher(teacher.classes)
+            renderYearAndMonthSelect(yearsAndMonths)
+        } catch (error) {
+            console.error('Error fetching teacher data:', error)
+        }
     }
 
     function getUniqueYearsAndMonthsForTeacher(classes) {
@@ -115,7 +117,6 @@
 
     function renderYearAndMonthSelect(yearsAndMonths) {
         const yearSelect = document.getElementById('yearSelect')
-        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
         Object.keys(yearsAndMonths).forEach(year => {
             const option = document.createElement('option')
             option.value = year
@@ -125,7 +126,6 @@
         yearSelect.addEventListener('change', function (event) {
             const selectedYear = event.target.value
             const monthSelect = document.getElementById('monthSelect')
-            monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
             if (selectedYear) {
                 yearsAndMonths[selectedYear].forEach(month => {
                     const option = document.createElement('option')
@@ -169,8 +169,8 @@
         calendarElement.innerHTML = ''
     }
 
-    function fetchClassCalendar(classId, year, month) {
-        axios.get(`http://localhost:3000/api/classschedule/${classId}/${year}/${month}`)
+    async function fetchClassCalendar(classId, year, month) {
+        await axios.get(`http://localhost:3000/api/classschedule/${classId}/${year}/${month}`)
             .then(function (response) {
                 const calendarData = response.data.calendar
                 const lessonDays = response.data.lessonDays
@@ -237,17 +237,16 @@
         calendarElement.appendChild(table)
     }
 
-    function getDayOfWeek(dateString) {
-        const date = new Date(dateString)
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-        const dayIndex = date.getDay()
-        console.log(days[dayIndex])
-        return days[dayIndex]
+    function getMonthName(month) {
+        const monthNames = i18nPromises.months
+        return monthNames[month - 1] || ''
     }
 
-    function getMonthName(month) {
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        return monthNames[month - 1] || ''
+    function getDayOfWeek(dateString) {
+        const days = i18nPromises.days
+        const date = new Date(dateString)
+        const dayIndex = date.getDay()
+        return days[dayIndex] || ''
     }
 
     function handleCalendarDayClick(day) {
@@ -297,7 +296,9 @@
         return {teacherId}
     }
 
+    document.addEventListener('DOMContentLoaded', function() {
     fetchTeacherDataAndRenderCalendar()
+    })
 </script>
 </body>
 </html>

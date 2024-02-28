@@ -13,22 +13,22 @@
 <div class="container py-5">
     <div class="card mx-auto" style="max-width: 400px">
         <div class="card-header">
-            <h3 class="text-center">Add Attendance</h3>
+            <h3 class="text-center" data-i18n="add-attendance"></h3>
         </div>
         <div class="card-body">
             <form id="attendanceForm" method="post" class="text-center">
                 <div class="mb-3" id="studentSelectWrapper">
-                    <label for="studentSelect" class="form-label">Select Students:</label>
+                    <label for="studentSelect" class="form-label" data-i18n="select-students"></label>
                     <select class="form-select" id="studentSelect" name="studentIds[]" multiple required>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary w-100" id="submitButton" disabled>Create</button>
+                <button type="submit" class="btn btn-primary w-100" id="submitButton" disabled data-i18n="create"></button>
             </form>
         </div>
     </div>
 </div>
+<script src="/i18n.js"></script>
 <script>
-    //router.post('/:id/:year/:month/:day', Controller.collectAttendance)
     async function getStudents(classId) {
         try {
             const url = window.location.href
@@ -44,7 +44,6 @@
     function populateDropdown(selectElement, data) {
         selectElement.innerHTML = ''
         data.forEach(item => {
-            console.log(item)
             const option = document.createElement('option')
             option.text = item.name
             option.value = item._id

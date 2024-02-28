@@ -12,16 +12,16 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Personal Info</h5>
-            <p class="card-text">Surname: <span id="surname"></span></p>
-            <p class="card-text">Name: <span id="name"></span></p>
-            <p class="card-text">Lastname: <span id="lastname"></span></p>
+            <h5 class="card-title" data-i18n="personal-info"></h5>
+            <p class="card-text" data-i18n="surname"><span id="surname"></span></p>
+            <p class="card-text" data-i18n="name"><span id="name"></span></p>
+            <p class="card-text" data-i18n="lastname"><span id="lastname"></span></p>
         </div>
     </div>
 
     <div class="card mt-4">
         <div class="card-body">
-            <h5 class="card-title">Class Schedule</h5>
+            <h5 class="card-title" data-i18n="class-schedule"></h5>
             <div class="row mb-3">
                 <div class="col-md-1 mb-1">
                     <select id="classSelect" class="form-select" aria-label="Select Class"></select>
@@ -39,18 +39,19 @@
 
     <div class="card mt-4" id="classInfoCard" style="display: none">
         <div class="card-body">
-            <h5 class="card-title">Class Info</h5>
-            <p class="card-text">Class Name: <span id="className"></span></p>
-            <p class="card-text">Number of lessons: <span id="numberOfLessons"></span></p>
-            <p class="card-text">Lesson Days: <span id="lessonDays"></span></p>
-            <p class="card-text">Teacher: <span id="teacher"></span></p>
-            <h5 class="card-title mt-3">Students</h5>
+            <h5 class="card-title" data-i18n="class-info"></h5>
+            <p class="card-text" data-i18n="class-name"><span id="className"></span></p>
+            <p class="card-text" data-i18n="number-of-lessons"><span id="numberOfLessons"></span></p>
+            <p class="card-text" data-i18n="lesson-days"><span id="lessonDays"></span></p>
+            <p class="card-text" data-i18n="teacher"><span id="teacher"></span></p>
+            <h5 class="card-title mt-3" data-i18n="students"></h5>
             <ul id="studentsList"></ul>
             <div id="studentDetails"></div>
 
         </div>
     </div>
 </div>
+<script src="/i18n.js"></script>
 
 <script>
     function fetchManagerDataAndRenderCalendar() {
@@ -58,17 +59,19 @@
         const {managerId} = extractIdsFromUrl(url)
 
         const classSelect = document.getElementById('classSelect')
-        classSelect.innerHTML = '<option value="" selected disabled>Select Class</option>'
+        classSelect.innerHTML = '<option value="" selected disabled data-i18n="select-class"></option>'
 
         const yearSelect = document.getElementById('yearSelect')
-        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+        yearSelect.innerHTML = '<option value="" selected disabled data-i18n="select-year"></option>'
 
         const monthSelect = document.getElementById('monthSelect')
-        monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+        monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
 
         axios.get(`http://localhost:3000/api/manager/${managerId}`)
             .then(function (response) {
                 const manager = response.data.manager
+                console.log(manager.surname)
+                console.log(response.data)
                 document.getElementById('surname').innerText = manager.surname
                 document.getElementById('name').innerText = manager.name
                 document.getElementById('lastname').innerText = manager.lastname
@@ -106,7 +109,7 @@
 
     function renderYearAndMonthSelect(yearsAndMonths) {
         const yearSelect = document.getElementById('yearSelect')
-        yearSelect.innerHTML = '<option value="" selected disabled>Select Year</option>'
+        yearSelect.innerHTML = '<option value="" selected disabled data-i18n="select-year"></option>'
         Object.keys(yearsAndMonths).forEach(year => {
             const option = document.createElement('option')
             option.value = year
@@ -116,7 +119,7 @@
         yearSelect.addEventListener('change', function (event) {
             const selectedYear = event.target.value
             const monthSelect = document.getElementById('monthSelect')
-            monthSelect.innerHTML = '<option value="" selected disabled>Select Month</option>'
+            monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
             if (selectedYear) {
                 yearsAndMonths[selectedYear].forEach(month => {
                     const option = document.createElement('option')
@@ -223,11 +226,11 @@
     function displayStudentDetails(student, lessonsCount, paymentForMonth, daysAttended, month, year, selectedSchedule) {
         const studentDetails = document.getElementById('studentDetails')
         studentDetails.innerHTML = `
-        <h5>Student Details</h5>
-        <p>Name: ${student.surname} ${student.name} ${student.lastname}</p>
-        <p>Lessons attended: ${lessonsCount}/${selectedSchedule.numberOfLessons}</p>
-        <p>Days attended: ${daysAttended.join(', ')}</p>
-        <p>Payment: ${paymentForMonth ? paymentForMonth.payment : 'false'}</p>
+        <h5 data-i18n="student-details"></h5>
+        <p data-i18n="full-name">${student.surname} ${student.name} ${student.lastname}</p>
+        <p data-i18n="lessons-attended">${lessonsCount}/${selectedSchedule.numberOfLessons}</p>
+        <p data-i18n="days-attended">${daysAttended.join(', ')}</p>
+        <p data-i18n="payment">${paymentForMonth ? paymentForMonth.payment : 'false'}</p>
     `
     }
 
@@ -241,6 +244,10 @@
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         return monthNames[month - 1] || ''
     }
+
+    // function getMonthName(month) {
+    //     return i18n[currentLanguage].months[month - 1] || ''
+    // }
 
     document.addEventListener('DOMContentLoaded', () => {
         fetchManagerDataAndRenderCalendar()

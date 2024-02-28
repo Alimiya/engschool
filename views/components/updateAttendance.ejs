@@ -13,17 +13,17 @@
 <div class="container py-5">
     <div class="card mx-auto" style="max-width: 400px">
         <div class="card-header">
-            <h3 class="text-center">Update Attendance</h3>
+            <h3 class="text-center" data-i18n="update-attendance"></h3>
             <h4 class="text-center" id="date"></h4>
         </div>
         <div class="card-body">
             <form id="attendanceForm" method="post" class="text-center">
                 <div class="mb-3" id="studentSelectWrapper">
-                    <label for="studentSelect" class="form-label">Select Students:</label>
+                    <label for="studentSelect" class="form-label" data-i18n="select-students"></label>
                     <select class="form-select" id="studentSelect" name="studentIds[]" multiple required>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary w-100" id="submitButton" disabled>Update</button>
+                <button type="submit" class="btn btn-primary w-100" id="submitButton" disabled data-i18n="update"></button>
             </form>
         </div>
     </div>
@@ -31,13 +31,14 @@
 <div class="container">
     <div class="card mx-auto">
         <div class="card-header">
-            <h3>Attended students</h3>
+            <h3 data-i18n="attended-students"></h3>
         </div>
         <div class="card-body">
             <ul id="studentsList" class="list-group"></ul>
         </div>
     </div>
 </div>
+<script src="/i18n.js"></script>
 <script>
     async function getStudents(classId) {
         try {
