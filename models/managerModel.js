@@ -10,6 +10,7 @@ const managerSchema = mongoose.Schema({
     chat_id:{type:Number, unique: true},
     role: { type: String, default: 'manager'},
     classes:[{type:mongoose.Schema.Types.ObjectId,ref:'Class'}],
+    schools: [{ type: mongoose.Schema.Types.ObjectId, ref: 'School' }]
 })
 
 const Manager = mongoose.model('Manager', managerSchema)

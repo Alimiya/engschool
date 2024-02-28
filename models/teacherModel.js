@@ -8,7 +8,8 @@ const teacherSchema = mongoose.Schema({
     password: { type: String, required: true },
     blocked:{type:Boolean,default:false},
     role: { type: String, default:'teacher'},
-    classes:[{type:mongoose.Schema.Types.ObjectId, ref:'Class'}]
+    classes:[{type:mongoose.Schema.Types.ObjectId, ref:'Class'}],
+    school: { type: mongoose.Schema.Types.ObjectId, ref: 'School'}
 })
 
 const Teacher = mongoose.model('Teacher', teacherSchema)

@@ -29,9 +29,9 @@
   "months": ["Қаңтан", "Ақпан", "Наурыз", "Сәуір", "Мамыр", "Маусым", "Шілде", "Тамыз", "Қыркүйек", "Қазан", "Қараша", "Желтоқсан"],
 
   "personal-info": "Жеке ақпарат",
-  "surname": "Тегі",
-  "name": "Аты",
-  "lastname": "Әкесінің аты",
+  "surname": "Тегі ",
+  "name": "Аты ",
+  "lastname": "Әкесінің аты ",
   "class-schedule": "Сынып кестесі",
   "class-info": "Сынып ақпараты",
   "class-name": "Сынып аты",
@@ -41,6 +41,7 @@
   "student-details": "Студенттің жеке ақпараты",
   "lessons-attended": "Қатысқан сабақтар",
   "days-attended": "Қатысқан күндер",
+  "pay-button": "Төлеу",
 
   "student": "Студент",
   "add-lessons": "Сабақтарды қосу",
@@ -59,7 +60,7 @@
   "attended-students": "Қатысқан студенттер",
   "add-student-to-class": "Студентті сыныпқа қосу",
   "add-update-lessons": "Сабақтарды қосу/жаңарту",
-  "teaching-classes": "Сыныптар:",
+  "teaching-classes": "Сыныптар: ",
 
   "january" : "Қаңтар",
   "february" : "Ақпан",

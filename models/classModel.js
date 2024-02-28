@@ -5,7 +5,8 @@ const classSchema = mongoose.Schema({
     schedule:[{type:mongoose.Schema.Types.ObjectId, ref:'ClassSchedule'}],
     teacher:{type:mongoose.Schema.Types.ObjectId, ref:'Teacher'},
     students:[{type:mongoose.Schema.Types.ObjectId, ref:'Student'}],
-    lessons:[{type:mongoose.Schema.Types.ObjectId, ref:'Lesson'}]
+    lessons:[{type:mongoose.Schema.Types.ObjectId, ref:'Lesson'}],
+    school: { type: mongoose.Schema.Types.ObjectId, ref: 'School'}
 })
 
 const Class = mongoose.model('Class', classSchema)

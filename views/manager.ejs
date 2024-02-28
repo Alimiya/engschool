@@ -13,9 +13,15 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title" data-i18n="personal-info"></h5>
-            <p class="card-text" data-i18n="surname"><span id="surname"></span></p>
-            <p class="card-text" data-i18n="name"><span id="name"></span></p>
-            <p class="card-text" data-i18n="lastname"><span id="lastname"></span></p>
+            <div>
+                <p class="card-text d-inline" data-i18n="surname"></p><span id="surname" class="d-inline-block"></span>
+            </div>
+            <div>
+                <p class="card-text d-inline" data-i18n="name"></p><span id="name" class="d-inline-block"></span>
+            </div>
+            <div>
+                <p class="card-text d-inline" data-i18n="lastname"></p><span id="lastname" class="d-inline-block"></span>
+            </div>
         </div>
     </div>
 
@@ -40,10 +46,10 @@
     <div class="card mt-4" id="classInfoCard" style="display: none">
         <div class="card-body">
             <h5 class="card-title" data-i18n="class-info"></h5>
-            <p class="card-text" data-i18n="class-name"><span id="className"></span></p>
-            <p class="card-text" data-i18n="number-of-lessons"><span id="numberOfLessons"></span></p>
-            <p class="card-text" data-i18n="lesson-days"><span id="lessonDays"></span></p>
-            <p class="card-text" data-i18n="teacher"><span id="teacher"></span></p>
+            <p class="card-text" data-i18n="class-name"></p><span id="className"></span>
+            <p class="card-text" data-i18n="number-of-lessons"></p><span id="numberOfLessons"></span>
+            <p class="card-text" data-i18n="lesson-days"></p><span id="lessonDays"></span>
+            <p class="card-text" data-i18n="teacher"></p><span id="teacher"></span>
             <h5 class="card-title mt-3" data-i18n="students"></h5>
             <ul id="studentsList"></ul>
             <div id="studentDetails"></div>
@@ -51,8 +57,7 @@
         </div>
     </div>
 </div>
-<script src="/i18n.js"></script>
-
+<script src="/i18n.js" type="module"></script>
 <script>
     function fetchManagerDataAndRenderCalendar() {
         const url = window.location.href
@@ -70,8 +75,6 @@
         axios.get(`http://localhost:3000/api/manager/${managerId}`)
             .then(function (response) {
                 const manager = response.data.manager
-                console.log(manager.surname)
-                console.log(response.data)
                 document.getElementById('surname').innerText = manager.surname
                 document.getElementById('name').innerText = manager.name
                 document.getElementById('lastname').innerText = manager.lastname
@@ -183,6 +186,7 @@
                         const payButton = document.createElement('button')
                         payButton.innerText = 'Pay'
                         payButton.classList.add('btn', 'btn-primary', 'mb-1')
+                        payButton.setAttribute('data-i18n', 'pay-button')
 
                         const space = document.createElement('span')
                         space.innerText = ' '

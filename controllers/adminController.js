@@ -3,6 +3,72 @@ const Student = require('../models/studentModel')
 const Manager = require('../models/managerModel')
 const Teacher = require('../models/teacherModel')
 const Class = require('../models/classModel')
+const School = require('../models/schoolModel')
+
+exports.getSchoolClasses = async (req, res) => {
+}
+exports.getSchoolTeachers = async (req, res) => {
+}
+
+exports.getSchoolManager = async (req, res) => {
+    const schoolId = req.params.id
+    try {
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.createSchool = async (req, res) => {
+    const {name, address} = req.body
+
+    const schoolExists = await School.findOne({name})
+    if (schoolExists) return res.json({message: "Name already taken"})
+
+    const addressExists = await School.findOne({address})
+    if (addressExists) return res.json({message: "Address already exists"})
+
+    try {
+        const newSchool = await new School({
+            name,
+            address
+        })
+
+        await newSchool.save()
+        res.json(newSchool)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.getSchools = async (req, res) => {
+    try {
+        const schools = await School.find({})
+        res.json(schools)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.getSchoolById = async (req, res) => {
+    const schoolId = req.params.id
+    try {
+        const school = await School.findOne(schoolId)
+        res.json(school)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.getTeacherById = async (req, res) => {
+    const teacherId = req.params.id
+
+    try {
+        const teacher = await Teacher.findById(teacherId)
+        res.json(teacher)
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 exports.getManagers = async (req, res) => {
     try {

@@ -29,9 +29,9 @@
   "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
 
   "personal-info": "Personal info",
-  "surname": "Surname",
-  "name": "Name",
-  "lastname": "Lastname",
+  "surname": "Surname ",
+  "name": "Name ",
+  "lastname": "Lastname ",
   "class-schedule": "Class schedule",
   "class-info": "Class info",
   "class-name": "Class name",
@@ -41,6 +41,7 @@
   "student-details": "Student details",
   "lessons-attended": "Lessons attended",
   "days-attended": "Days attended",
+  "pay-button": "Pay",
 
   "student": "Student",
 
@@ -60,7 +61,7 @@
   "attended-students": "Attended students",
   "add-student-to-class": "Add student to class",
   "add-update-lessons": "Add/Update lessons",
-  "teaching-classes": "Classes:",
+  "teaching-classes": "Classes: ",
 
   "january" : "January",
   "february" : "February",

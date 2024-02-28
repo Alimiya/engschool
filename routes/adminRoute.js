@@ -4,6 +4,11 @@ const Controller = require('../controllers/adminController')
 const {verifyAdminToken} = require('../middlewares/verify')
 const {ADMIN_TOKEN_SECRET} = process.env
 
+router.get('/school/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolById)
+router.get('/school/:id/teachers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolTeachers)
+router.get('/school/:id/managers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolManager)
+router.get('/school/:id/classes', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolClasses)
+router.get('/schools', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchools)
 
 router.get('/manager/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getManagerById)
 router.post('/manager/create', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.createManager)
