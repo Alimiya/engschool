@@ -27,6 +27,11 @@
   "unblock": "Unblock",
   "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  "school": "School",
+  "select-school": "Select school",
+  "add-manager-to-school": "Add manager to school",
+  "update-school-manager": "Update school manager",
+  "select-manager": "Select manager",
 
   "personal-info": "Personal info",
   "surname": "Surname ",

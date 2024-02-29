@@ -5,6 +5,9 @@ const {verifyAdminToken} = require('../middlewares/verify')
 const {ADMIN_TOKEN_SECRET} = process.env
 
 router.get('/school/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolById)
+router.post('/school/create', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.createSchool)
+router.post('/school/manager/add', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.addSchoolManager)
+router.post('/school/manager/update', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.updateSchoolManager)
 router.get('/school/:id/teachers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolTeachers)
 router.get('/school/:id/managers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolManager)
 router.get('/school/:id/classes', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolClasses)
@@ -16,12 +19,12 @@ router.post('/manager/block/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controll
 router.post('/manager/unblock/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.unblockManager)
 router.get('/managers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getManagers)
 
-
 router.get('/teacher/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getTeacherById)
 router.post('/teacher/create', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.createTeacher)
 router.post('/teacher/block/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.blockTeacher)
 router.post('/teacher/unblock/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.unblockTeacher)
 router.get('/teachers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getTeachers)
+router.get('/teachers/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getTeachersBySchool)
 
 router.get('/student/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getStudentById)
 router.post('/student/block/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.blockStudent)
@@ -32,5 +35,6 @@ router.get('/students/created', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller
 
 router.get('/class/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getClassById)
 router.get('/classes', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getClasses)
+router.get('/classes/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getClassesBySchool)
 
 module.exports = router

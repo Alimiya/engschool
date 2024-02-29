@@ -5,14 +5,93 @@ const Teacher = require('../models/teacherModel')
 const Class = require('../models/classModel')
 const School = require('../models/schoolModel')
 
-exports.getSchoolClasses = async (req, res) => {
+exports.getTeachersBySchool = async (req, res, next) => {
+        const schoolId = req.params.id
+    try {
+        const teachers = await Teacher.find({ school:schoolId })
+        res.json(teachers)
+    } catch (err) {
+            console.log(err)
+    }
 }
+
+exports.getClassesBySchool = async (req, res, next) => {
+    const schoolId = req.params.id
+    try {
+        const classes = await Class.find({ school:schoolId })
+        res.json(classes)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.addSchoolManager = async (req, res) => {
+    const adminId = req.user._id
+    const { managerId, schoolId } = req.body
+
+    try {
+        const school = await School.findById(schoolId)
+        if (!school) return res.json({ error: 'Школа не найдена' })
+
+        const existingManager = await Manager.findOne({ schools: schoolId })
+        if (existingManager) return res.json({ error: 'Менеджер уже существует в этой школе' })
+
+        school.manager = managerId
+        await school.save()
+
+        await Manager.findByIdAndUpdate(managerId, { schools: schoolId }, { new: true })
+
+        res.redirect(`/profile/admin/${adminId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.updateSchoolManager = async (req, res) => {
+    const adminId = req.user._id
+    const { managerId, schoolId } = req.body
+    try {
+        const school = await School.findById(schoolId)
+        if (!school) {
+            return res.json({ error: 'Школа не найдена' })
+        }
+
+        school.manager = managerId
+        await school.save()
+
+        await Manager.findByIdAndUpdate(managerId, { school: schoolId }, { new: true })
+
+        res.redirect(`/profile/admin/${adminId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.getSchoolClasses = async (req, res) => {
+    const schoolId = req.params.id
+    try {
+        const classes = await Class.find({ school: schoolId })
+        res.json({ classes })
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 exports.getSchoolTeachers = async (req, res) => {
+    const schoolId = req.params.id
+    try {
+        const teachers = await Teacher.find({ school: schoolId })
+        res.json({ teachers })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 exports.getSchoolManager = async (req, res) => {
     const schoolId = req.params.id
     try {
+        const manager = await Manager.findOne({ schools: schoolId })
+        res.json({ manager })
     } catch (err) {
         console.log(err)
     }
@@ -52,7 +131,7 @@ exports.getSchools = async (req, res) => {
 exports.getSchoolById = async (req, res) => {
     const schoolId = req.params.id
     try {
-        const school = await School.findOne(schoolId)
+        const school = await School.findById(schoolId)
         res.json(school)
     } catch (err) {
         console.log(err)
@@ -72,7 +151,7 @@ exports.getTeacherById = async (req, res) => {
 
 exports.getManagers = async (req, res) => {
     try {
-        const managers = await Manager.find({})
+        const managers = await Manager.find({}).populate('schools')
         res.json(managers)
     } catch (err) {
         console.log(err)
@@ -91,6 +170,7 @@ exports.getManagerById = async (req, res) => {
 }
 
 exports.createManager = async (req, res) => {
+    const adminId = req.user._id
     const {name, surname, lastname, username, password} = req.body
 
     const salt = await bcrypt.genSalt(10)
@@ -109,7 +189,7 @@ exports.createManager = async (req, res) => {
         })
 
         await newUser.save()
-        res.json({newUser})
+        res.redirect(`/profile/admin/${adminId}`)
     } catch (err) {
         console.log(err)
     }
@@ -218,25 +298,30 @@ exports.getTeacherById = async (req, res) => {
 }
 
 exports.createTeacher = async (req, res) => {
-    const {name, surname, lastname, username, password} = req.body
+    const adminId = req.user._id
+    const { name, surname, lastname, username, password, schoolId } = req.body
 
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
-    const userExists = await Teacher.findOne({username})
-    if (userExists) return res.json({message: "Username already taken"})
-
     try {
+        const userExists = await Teacher.findOne({ username })
+        if (userExists) return res.json({ message: "Username already taken" })
+
         const newUser = await new Teacher({
             name,
             surname,
             lastname,
             username,
             password: hashedPassword,
+            school: schoolId
         })
 
         await newUser.save()
-        res.json({newUser})
+
+        await School.findByIdAndUpdate(schoolId, { $addToSet: { teachers: newUser._id } }, { new: true })
+
+        res.redirect(`/profile/admin/${adminId}`)
     } catch (err) {
         console.log(err)
     }
@@ -272,6 +357,7 @@ exports.getStudentById = async (req, res) => {
 }
 
 exports.addStudent = async (req, res) => {
+    const adminId = req.user._id
     const {userId, username, password} = req.body
 
     const salt = await bcrypt.genSalt(10)
@@ -293,7 +379,7 @@ exports.addStudent = async (req, res) => {
         )
 
         await updateUser.save()
-        res.json({updateUser})
+        res.redirect(`/profile/admin/${adminId}`)
     } catch (err) {
         console.log(err)
     }

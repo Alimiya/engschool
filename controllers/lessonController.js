@@ -58,13 +58,14 @@ exports.collectAttendance = async (req, res) => {
             }
         }
 
-        return res.json({message: 'Attendance collected successfully'})
+        res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
         console.log(err)
     }
 }
 
 exports.updateAttendance = async (req, res) => {
+    const teacherId = req.user._id
     const {studentIds} = req.body
     const {id: classId, year, month, day} = req.params
     try {
@@ -106,7 +107,7 @@ exports.updateAttendance = async (req, res) => {
             }
         }
 
-        return res.json({success: true, message: 'Attendance updated successfully'})
+        res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
         console.log(err)
     }

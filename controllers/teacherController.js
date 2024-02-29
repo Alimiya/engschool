@@ -1,6 +1,7 @@
 const Student = require('../models/studentModel')
 const Teacher = require('../models/teacherModel')
 const Class = require('../models/classModel')
+const School = require('../models/schoolModel')
 const Manager = require('../models/managerModel')
 
 exports.getTeacherById = async (req, res) => {
@@ -20,6 +21,7 @@ exports.getTeacherById = async (req, res) => {
 }
 
 exports.createStudent = async (req, res) => {
+    const teacherId = req.user._id
     const {name, surname, lastname} = req.body
 
     try {
@@ -30,7 +32,7 @@ exports.createStudent = async (req, res) => {
         })
 
         await newUser.save()
-        res.json({newUser})
+        res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
         console.log(err)
     }
@@ -58,23 +60,39 @@ exports.getStudentById = async (req, res) => {
 
 exports.createClass = async (req, res) => {
     const teacherId = req.user._id
-    const {name} = req.body
+    const { name } = req.body
 
     try {
-        const managers = await Manager.find({})
+        const teacher = await Teacher.findById(teacherId).populate('school')
+        if (!teacher) {
+            return res.status(404).json({ error: 'Учитель не найден' })
+        }
+
+        const existingClass = await Class.findOne({ name, school: teacher.school._id })
+        if (existingClass) {
+            return res.status(400).json({ error: 'Класс с таким именем уже существует в этой школе' })
+        }
+
         const newClass = await new Class({
             name,
-            teacher: teacherId
+            teacher: teacherId,
+            school: teacher.school._id
         })
 
         await newClass.save()
-        await Teacher.findByIdAndUpdate(teacherId, {$push: {classes: newClass._id}})
-        for (const manager of managers) {
-            await Manager.findByIdAndUpdate(manager._id, {$push: {classes: newClass._id}})
+        await Teacher.findByIdAndUpdate(teacherId, { $push: { classes: newClass._id } })
+
+        await School.findByIdAndUpdate(teacher.school._id, { $push: { classes: newClass._id } })
+
+        const manager = await Manager.findOne({ school: teacher.school._id });
+        if (manager) {
+            await Manager.findByIdAndUpdate(manager._id, { $push: { classes: newClass._id } });
         }
-        res.json({newClass})
+
+        res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
         console.log(err)
+        res.status(500).json({ error: 'Произошла ошибка при создании класса' })
     }
 }
 
@@ -114,6 +132,12 @@ exports.addStudentsToClass = async (req, res) => {
         const studentsWithCreatedStatus = studentsExist.filter(student => student.status === 'created')
         const studentsWithoutClass = await Student.find({class: {$exists: false, $eq: null}})
 
+        const studentsWithClass = await Student.find({ _id: { $in: studentIds }, class: { $ne: null } })
+        if (studentsWithClass.length > 0) {
+            const studentNames = studentsWithClass.map(student => `${student.name} ${student.surname}`).join(', ')
+            return res.json({ error: `У студентов (${studentNames}) уже есть класс` })
+        }
+
         if (!checkTeacher) return res.json({message: "Not same teacher"})
         if (!classInfo) return res.json({message: "Class not found"})
         if (studentsExist.length !== studentIds.length) return res.json({error: 'Student or students not found'})
@@ -124,11 +148,12 @@ exports.addStudentsToClass = async (req, res) => {
             await Student.findByIdAndUpdate(studentId, {$set: {class: classId}})
         }))
         await Class.findByIdAndUpdate(classId, {$addToSet: {students: {$each: studentIds}}})
-        return res.json({classInfo})
+        res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
         console.log(err)
     }
 }
+
 exports.getStudentsByClass = async (req, res) => {
     const classId = req.params.id
 

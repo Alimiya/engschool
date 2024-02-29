@@ -34,7 +34,7 @@ exports.payDate = async (req, res) => {
         student.payments.push({year: +year, month: +month, payment: true})
         await student.save()
 
-        res.json({message: "Payment successfully added"})
+        res.redirect(req.get('referer'))
     } catch (err) {
         console.log(err)
     }

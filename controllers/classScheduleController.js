@@ -28,7 +28,7 @@ exports.createClassSchedule = async (req, res) => {
 
             await newSchedule.save()
             await Class.findByIdAndUpdate(classId, { $push: { schedule: newSchedule } })
-            res.json({newSchedule})
+            res.redirect(`/profile/teacher/${teacherId}`)
         }
     } catch (err) {
         console.log(err)
@@ -78,6 +78,7 @@ exports.getCurrentSchedule = async (req, res) => {
 }
 
 exports.selectLessonDays = async (req, res) => {
+    const teacherId = req.user._id
     const { classScheduleId, lessonDays } = req.body
 
     try {
@@ -91,7 +92,7 @@ exports.selectLessonDays = async (req, res) => {
         schedule.lessonDays = parsedLessonDays
         await schedule.save()
 
-        return res.json({ message: 'Lesson days selected successfully'})
+        res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
         console.log(err)
         return res.status(500).json({ message: 'Internal server error' })

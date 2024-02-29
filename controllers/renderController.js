@@ -57,3 +57,11 @@ exports.getAttendance = async (req, res) => {
 exports.updateAttendance = async (req, res) => {
     res.render('components/updateAttendance', {currentPage: 'subteacher', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
 }
+
+exports.addManagerToSchool = async (req, res) => {
+    res.render('components/addManagerToSchool', {currentPage: 'subadmin', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
+}
+
+exports.updateSchoolManager = async (req, res) => {
+    res.render('components/updateSchoolManager', {currentPage: 'subadmin', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
+}

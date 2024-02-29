@@ -34,6 +34,12 @@
         </select>
     </div>
 
+    <div id="schoolSelection" class="input-group mb-3" style="display: none">
+        <select id="schoolSelect" class="form-select">
+            <option value="" selected disabled data-i18n="select-school">
+        </select>
+    </div>
+
     <div class="input-group mb-2">
         <select id="statusSelect" class="form-select">
             <option value="all" data-i18n="all"></option>
@@ -43,9 +49,15 @@
     </div>
 
     <div id="classOptions" class="mb-3" style="display: none">
-        <select id="classSelect" class="form-select mb-3"></select>
-        <select id="yearSelect" class="form-select mb-3"></select>
-        <select id="monthSelect" class="form-select mb-3"></select>
+        <select id="classSelect" class="form-select mb-3">
+            <option value="" selected disabled data-i18n="select-class">
+        </select>
+        <select id="yearSelect" class="form-select mb-3">
+            <option value="" selected disabled data-i18n="select-year">
+        </select>
+        <select id="monthSelect" class="form-select mb-3">
+            <option value="" selected disabled data-i18n="select-month">
+        </select>
         <select id="classStatusSelect" class="form-select mb-3">
             <option value="all" data-i18n="all"></option>
             <option value="blocked" data-i18n="blocked"></option>
@@ -57,15 +69,11 @@
             <option value="non-paid" data-i18n="non-paid"></option>
         </select>
     </div>
-    <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/admin/manager/create'"
-            data-i18n="create-manager">
-    </button>
-    <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/admin/teacher/create'"
-            data-i18n="create-teacher">
-    </button>
-    <button class="btn btn-primary mt-2" onclick="window.location.href='/profile/admin/student/add'"
-            data-i18n="add-student">
-    </button>
+    <button class="btn btn-primary mt-2" id="createManager" data-i18n="create-manager"></button>
+    <button class="btn btn-primary mt-2" id="createTeacher" data-i18n="create-teacher"></button>
+    <button class="btn btn-primary mt-2" id="addStudent" data-i18n="add-student"></button>
+    <button class="btn btn-primary mt-2" id="addManagerToSchool" data-i18n="add-manager-to-school"></button>
+    <button class="btn btn-primary mt-2" id="updateSchoolManager" data-i18n="update-school-manager"></button>
 </div>
 <div class="container mt-4">
     <div class="scrollable-table-wrapper">
@@ -73,6 +81,7 @@
             <thead>
             <tr class="text-center">
                 <th scope="col" data-i18n="full-name"></th>
+                <th scope="col" data-i18n="school"></th>
                 <th scope="col" data-i18n="status"></th>
                 <th scope="col" data-i18n="action"></th>
             </tr>
@@ -124,10 +133,33 @@
     const managerTable = document.getElementById('managerTable')
     const teacherTable = document.getElementById('teacherTable')
     const studentTable = document.getElementById('studentTable')
+    const schoolSelection = document.getElementById('schoolSelection')
+    const schoolSelect = document.getElementById('schoolSelect')
+
+    schoolSelect.addEventListener('change', () => {
+        const selectedSchoolId = schoolSelect.value;
+        fetchData(selectedSchoolId)
+    })
+
+    async function fetchSchools() {
+        try {
+            const response = await axios.get('http://localhost:3000/api/admin/schools')
+            const schools = response.data
+
+            schools.forEach(school => {
+                const option = document.createElement('option')
+                option.value = school._id
+                option.textContent = school.name
+                schoolSelect.appendChild(option)
+            })
+        } catch (error) {
+            console.error('Error fetching schools:', error);
+        }
+    }
 
     let originalData = []
 
-    async function fetchData() {
+    async function fetchData(schoolId) {
         let url = ''
 
         if (categorySelect.value === 'manager') {
@@ -136,6 +168,11 @@
             url = 'http://localhost:3000/api/admin/teachers'
         } else if (categorySelect.value === 'class') {
             url = 'http://localhost:3000/api/admin/classes'
+        }
+
+
+        if (schoolId) {
+            url += `/${schoolId}`
         }
 
         const response = await axios.get(url)
@@ -207,9 +244,6 @@
     }
 
     function fillClassSelect(data) {
-        classSelect.innerHTML = '<option value="" selected disabled data-i18n="select-class"></option>'
-        yearSelect.innerHTML = '<option value="" selected disabled data-i18n="select-year"></option>'
-        monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
 
         data.forEach(item => {
             const option = document.createElement('option')
@@ -242,8 +276,6 @@
     }
 
     function renderYearAndMonthSelect(yearsAndMonths) {
-        yearSelect.innerHTML = '<option value="" selected disabled data-i18n="select-year"></option>'
-        monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
 
         Object.keys(yearsAndMonths).forEach(year => {
             const option = document.createElement('option')
@@ -255,7 +287,6 @@
         yearSelect.addEventListener('change', () => {
             const selectedYear = yearSelect.value
             const selectedMonths = yearsAndMonths[selectedYear] || []
-            monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
             selectedMonths.forEach(month => {
                 const option = document.createElement('option')
                 option.value = month
@@ -301,9 +332,11 @@
         managerTableBody.innerHTML = ''
 
         data.forEach(manager => {
+            const schoolsNames = manager.schools.map(school => school.name).join(', ')
             const tr = document.createElement('tr')
             tr.innerHTML = `
                 <td>${manager.surname} ${manager.name} ${manager.lastname}</td>
+                <td>${schoolsNames}</td>
                 <td>${manager.blocked}</td>
                 <td>
                     ${manager.blocked === false ?
@@ -372,11 +405,18 @@
     categorySelect.addEventListener('change', () => {
         if (categorySelect.value === 'class') {
             classOptions.style.display = 'block'
+            schoolSelection.style.display = 'block'
             studentTable.style.display = 'table'
             statusSelect.style.display = 'none'
             fetchData()
-        } else {
+        } else if (categorySelect.value === 'teacher'){
+            schoolSelection.style.display = 'block'
             statusSelect.style.display = 'block'
+            classOptions.style.display = 'none'
+            fetchData()
+        } else{
+            statusSelect.style.display = 'block'
+            schoolSelection.style.display = 'none'
             classOptions.style.display = 'none'
             fetchData()
         }
@@ -389,8 +429,40 @@
         return i18n[currentLanguage].months[month - 1] || ''
     }
 
+    function extractIdsFromUrl(url) {
+        const segments = url.split("/")
+        const adminId = segments[5]
+        return {adminId}
+    }
+
+    const url = window.location.href
+    const {adminId} = extractIdsFromUrl(url)
+
+    const createManager = document.getElementById('createManager')
+    const createTeacher = document.getElementById('createTeacher')
+    const addStudent = document.getElementById('addStudent')
+    const addManagerToSchool = document.getElementById('addManagerToSchool')
+    const updateSchoolManager = document.getElementById('updateSchoolManager')
+
+    createManager.addEventListener('click', () => {
+        window.location.href = `/profile/admin/${adminId}/manager/create`
+    })
+    createTeacher.addEventListener('click', () => {
+        window.location.href = `/profile/admin/${adminId}/teacher/create`
+    })
+    addStudent.addEventListener('click', () => {
+        window.location.href = `/profile/admin/${adminId}/student/add`
+    })
+    addManagerToSchool.addEventListener('click', () => {
+        window.location.href = `/profile/admin/${adminId}/school/manager/add`
+    })
+    updateSchoolManager.addEventListener('click', () => {
+        window.location.href = `/profile/admin/${adminId}/school/manager/update`
+    })
+
     document.addEventListener('DOMContentLoaded', () => {
         fetchData()
+        fetchSchools()
     })
 </script>
 </html>
