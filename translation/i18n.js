@@ -13,7 +13,14 @@ async function fetchTranslations(language) {
 }
 
 Promise.all(Object.values(i18nPromises)).then(translations => {
-    console.log(translations)
+    const buttons = document.querySelectorAll('.flag-button')
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const language = this.dataset.language
+            setLanguage(language)
+        })
+    })
+
     const i18n = {}
     Object.keys(i18nPromises).forEach((language, index) => {
         i18n[language] = translations[index]
@@ -27,16 +34,16 @@ Promise.all(Object.values(i18nPromises)).then(translations => {
         })
     }
 
+    function getLanguage(language) {
+        const button = document.querySelectorAll('.btn')
+        button.forEach(button => {
+            const key = button.getAttribute('data-i18n')
+            button.textContent = i18n[language][key]
+        })
+    }
+
     const defaultLanguage = 'kz'
     setLanguage(defaultLanguage)
-
-    const buttons = document.querySelectorAll('.flag-button')
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            const language = this.dataset.language
-            setLanguage(language)
-        })
-    })
 
 }).catch(err => {
     console.log(err)

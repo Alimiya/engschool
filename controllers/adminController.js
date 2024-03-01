@@ -18,7 +18,7 @@ exports.getTeachersBySchool = async (req, res, next) => {
 exports.getClassesBySchool = async (req, res, next) => {
     const schoolId = req.params.id
     try {
-        const classes = await Class.find({ school:schoolId })
+        const classes = await Class.find({ school:schoolId }).populate('schedule')
         res.json(classes)
     } catch (err) {
         console.log(err)
@@ -56,11 +56,23 @@ exports.updateSchoolManager = async (req, res) => {
             return res.json({ error: 'Школа не найдена' })
         }
 
+        const previousManagerId = school.manager
+        if (previousManagerId) {
+            const previousManager = await Manager.findById(previousManagerId)
+            if (previousManager) {
+                previousManager.schools.pull(schoolId)
+                await previousManager.save()
+            }
+        }
+
         school.manager = managerId
         await school.save()
 
-        await Manager.findByIdAndUpdate(managerId, { school: schoolId }, { new: true })
-
+        const newManager = await Manager.findById(managerId)
+        if (newManager && newManager.schools.indexOf(schoolId) === -1) {
+            newManager.schools.push(schoolId)
+            await newManager.save()
+        }
         res.redirect(`/profile/admin/${adminId}`)
     } catch (err) {
         console.log(err)

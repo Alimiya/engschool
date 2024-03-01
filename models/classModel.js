@@ -11,4 +11,15 @@ const classSchema = mongoose.Schema({
 
 const Class = mongoose.model('Class', classSchema)
 
+async function getClassByName(name) {
+    try {
+        const classInfo = await Class.findOne({ name });
+        return classInfo;
+    } catch (error) {
+        console.error('Error finding class by name:', error);
+        throw error;
+    }
+}
+
+
 module.exports = Class

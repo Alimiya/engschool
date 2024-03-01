@@ -34,7 +34,7 @@
         </select>
     </div>
 
-    <div id="schoolSelection" class="input-group mb-3" style="display: none">
+    <div id="schoolSelection" class="mb-3" style="display: none">
         <select id="schoolSelect" class="form-select">
             <option value="" selected disabled data-i18n="select-school">
         </select>
@@ -137,7 +137,7 @@
     const schoolSelect = document.getElementById('schoolSelect')
 
     schoolSelect.addEventListener('change', () => {
-        const selectedSchoolId = schoolSelect.value;
+        const selectedSchoolId = schoolSelect.value
         fetchData(selectedSchoolId)
     })
 
@@ -153,7 +153,7 @@
                 schoolSelect.appendChild(option)
             })
         } catch (error) {
-            console.error('Error fetching schools:', error);
+            console.error('Error fetching schools:', error)
         }
     }
 
@@ -165,6 +165,10 @@
         if (categorySelect.value === 'manager') {
             url = 'http://localhost:3000/api/admin/managers'
         } else if (categorySelect.value === 'teacher') {
+            if (!schoolId) {
+                clearTeacherTable()
+                return
+            }
             url = 'http://localhost:3000/api/admin/teachers'
         } else if (categorySelect.value === 'class') {
             url = 'http://localhost:3000/api/admin/classes'
@@ -174,13 +178,24 @@
         if (schoolId) {
             url += `/${schoolId}`
         }
+        console.log(url)
 
         const response = await axios.get(url)
         originalData = response.data
-        if (categorySelect.value === 'class') {
-            fillClassSelect(originalData)
+        if (categorySelect.value === 'class' && schoolId) {
+            const classes = response.data.map(classInfo => ({
+                _id: classInfo._id,
+                name: classInfo.name,
+                schedule: classInfo.schedule
+            }));
+            fillClassSelect(classes)
         }
         filterData()
+    }
+
+    function clearTeacherTable() {
+        const teacherTableBody = document.getElementById('teacherTableBody')
+        teacherTableBody.innerHTML = ''
     }
 
     classStatusSelect.addEventListener('change', filterData)
@@ -208,9 +223,9 @@
                     }
 
                     if (paymentStatusValue === 'paid') {
-                        isPaymentStatusMatch = paymentForMonth && paymentForMonth.payment !== undefined;
+                        isPaymentStatusMatch = paymentForMonth && paymentForMonth.payment !== undefined
                     } else if (paymentStatusValue === 'non-paid') {
-                        isPaymentStatusMatch = !paymentForMonth || paymentForMonth.payment === undefined;
+                        isPaymentStatusMatch = !paymentForMonth || paymentForMonth.payment === undefined
                     }
 
                     return isMatch && isClassStatusMatch && isPaymentStatusMatch
@@ -243,18 +258,17 @@
         }
     }
 
-    function fillClassSelect(data) {
-
-        data.forEach(item => {
+    function fillClassSelect(classNames) {
+        classNames.forEach(className => {
             const option = document.createElement('option')
-            option.value = item._id
-            option.textContent = item.name
+            option.value = className._id
+            option.textContent = className.name
             classSelect.appendChild(option)
-        })
+        });
 
         classSelect.addEventListener('change', () => {
             const selectedClassId = classSelect.value
-            const selectedClass = data.find(item => item._id === selectedClassId)
+            const selectedClass = classNames.find(item => item._id === selectedClassId)
             if (selectedClass) {
                 const yearsAndMonths = getUniqueYearsAndMonthsForClass(selectedClass)
                 renderYearAndMonthSelect(yearsAndMonths)
@@ -425,8 +439,13 @@
     statusSelect.addEventListener('change', filterData)
     searchInput.addEventListener('input', filterData)
 
+    // function getMonthName(month) {
+    //     return i18n[currentLanguage].months[month - 1] || ''
+    // }
+
     function getMonthName(month) {
-        return i18n[currentLanguage].months[month - 1] || ''
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        return monthNames[month - 1] || ''
     }
 
     function extractIdsFromUrl(url) {
