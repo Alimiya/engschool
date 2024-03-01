@@ -22,6 +22,7 @@
     "express": "^4.18.2",
     "express-session": "^1.18.0",
     "forever": "^4.0.3",
+    "i18next": "^23.10.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
     "node-calendar": "^0.1.5",

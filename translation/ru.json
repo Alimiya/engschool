@@ -67,16 +67,16 @@
   "add-update-lessons": "Добавить/Обновить уроки",
   "teaching-classes": "Классы: ",
 
-  "january" : "Январь",
-  "february" : "Февраль",
-  "march" : "Март",
-  "april" : "Апрель",
-  "may" : "Май",
-  "june" : "Июнь",
-  "july" : "Июль",
-  "august" : "Август",
+  "january" :   "Январь",
+  "february" :  "Февраль",
+  "march" :     "Март",
+  "april" :     "Апрель",
+  "may" :       "Май",
+  "june" :      "Июнь",
+  "july" :      "Июль",
+  "august" :    "Август",
   "september" : "Сентябрь",
-  "october" : "Октябрь",
-  "november" : "Ноябрь",
-  "december" : "Декабрь"
+  "october" :   "Октябрь",
+  "november" :  "Ноябрь",
+  "december" :  "Декабрь"
 }

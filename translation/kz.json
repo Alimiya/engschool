@@ -67,17 +67,17 @@
   "add-update-lessons": "Сабақтарды қосу/жаңарту",
   "teaching-classes": "Сыныптар: ",
 
-  "january" : "Қаңтар",
-  "february" : "Ақпан",
-  "march" : "Наурыз",
-  "april" : "Сәуір",
-  "may" : "Мамыр",
-  "june" : "Маусым",
-  "july" : "Шілде",
-  "august" : "Тамыз",
+  "january" :   "Қаңтар",
+  "february" :  "Ақпан",
+  "march" :     "Наурыз",
+  "april" :     "Сәуір",
+  "may" :       "Мамыр",
+  "june" :      "Маусым",
+  "july" :      "Шілде",
+  "august" :    "Тамыз",
   "september" : "Қыркүйек",
-  "october" : "Қазан",
-  "november" : "Қараша",
-  "december" : "Желтоқсан"
+  "october" :   "Қазан",
+  "november" :  "Қараша",
+  "december" :  "Желтоқсан"
 
 }

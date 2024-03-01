@@ -238,6 +238,8 @@
     }
 
     function getMonthName(month) {
+        console.log(month)
+        console.log(i18nPromises.months)
         const monthNames = i18nPromises.months
         return monthNames[month - 1] || ''
     }

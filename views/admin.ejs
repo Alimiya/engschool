@@ -118,9 +118,9 @@
 </div>
 </body>
 <script src="/i18n.js" type="module"></script>
-
 <script>
-    const debouncedFilterData = _.debounce(filterData, 300)
+    const debouncedFilterData = _.debounce(filterData, 3000)
+    const debouncedRenderManagerTable = _.debounce(renderManagerTable, 300);
     const categorySelect = document.getElementById('categorySelect')
     const statusSelect = document.getElementById('statusSelect')
     const classOptions = document.getElementById('classOptions')
@@ -187,7 +187,7 @@
                 _id: classInfo._id,
                 name: classInfo.name,
                 schedule: classInfo.schedule
-            }));
+            }))
             fillClassSelect(classes)
         }
         filterData()
@@ -264,7 +264,7 @@
             option.value = className._id
             option.textContent = className.name
             classSelect.appendChild(option)
-        });
+        })
 
         classSelect.addEventListener('change', () => {
             const selectedClassId = classSelect.value
@@ -439,14 +439,23 @@
     statusSelect.addEventListener('change', filterData)
     searchInput.addEventListener('input', filterData)
 
-    // function getMonthName(month) {
-    //     return i18n[currentLanguage].months[month - 1] || ''
-    // }
-
     function getMonthName(month) {
-        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        return monthNames[month - 1] || ''
+        const savedLanguage = localStorage.getItem('language')
+        const language = savedLanguage || 'kz'
+
+        const monthElement = document.querySelector(`option[value="${month}"]`)
+        if (monthElement) {
+            const key = monthElement.getAttribute('data-i18n')
+            return i18n[language][key] || ''
+        }
+
+        return ''
     }
+
+    // function getMonthName(month) {
+    //     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    //     return monthNames[month - 1] || ''
+    // }
 
     function extractIdsFromUrl(url) {
         const segments = url.split("/")
@@ -479,9 +488,21 @@
         window.location.href = `/profile/admin/${adminId}/school/manager/update`
     })
 
+    function setLanguage() {
+        const savedLanguage = localStorage.getItem('language')
+        const language = savedLanguage || 'kz'
+
+        const elements = document.querySelectorAll('[data-i18n]')
+        elements.forEach(element => {
+            const key = element.getAttribute('data-i18n')
+            element.textContent = i18n[language][key]
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         fetchData()
         fetchSchools()
+        setLanguage()
     })
 </script>
 </html>
