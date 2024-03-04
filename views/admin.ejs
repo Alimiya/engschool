@@ -117,7 +117,7 @@
     </div>
 </div>
 </body>
-<script src="/i18n.js" type="module"></script>
+<script src="/i18n.js" type="module" defer></script>
 <script>
     const debouncedFilterData = _.debounce(filterData, 3000)
     const debouncedRenderManagerTable = _.debounce(renderManagerTable, 300);
@@ -304,7 +304,7 @@
             selectedMonths.forEach(month => {
                 const option = document.createElement('option')
                 option.value = month
-                option.textContent = getMonthName(month)
+                option.dataset.i18n = month
                 monthSelect.appendChild(option)
             })
         })
@@ -354,8 +354,8 @@
                 <td>${manager.blocked}</td>
                 <td>
                     ${manager.blocked === false ?
-                `<form action="/api/admin/manager/block/${manager._id}" method="post"><button class="btn btn-danger" type="submit" data-i18n="block"></button></form>` :
-                `<form action="/api/admin/manager/unblock/${manager._id}" method="post"><button class="btn btn-success" type="submit" data-i18n="unblock"></button></form>`}
+                `<form action="/api/admin/manager/block/${manager._id}" method="post"><button class="btn btn-danger" type="submit" data-i18n="block">Блок</button></form>` :
+                `<form action="/api/admin/manager/unblock/${manager._id}" method="post"><button class="btn btn-success" type="submit" data-i18n="unblock">Блоктан шығару</button></form>`}
                 </td>
             `
             managerTableBody.appendChild(tr)
@@ -377,8 +377,8 @@
                 <td>${teacher.blocked}</td>
                 <td>
                     ${teacher.blocked === false ?
-                `<form action="/api/admin/teacher/block/${teacher._id}" method="post"><button class="btn btn-danger" type="submit" data-i18n="block"></button></form>` :
-                `<form action="/api/admin/teacher/unblock/${teacher._id}" method="post"><button class="btn btn-success" type="submit" data-i18n="unblock"></button></form>`}
+                `<form action="/api/admin/teacher/block/${teacher._id}" method="post"><button class="btn btn-danger" type="submit" data-i18n="block">Блок</button></form>` :
+                `<form action="/api/admin/teacher/unblock/${teacher._id}" method="post"><button class="btn btn-success" type="submit" data-i18n="unblock">Блоктан шығару</button></form>`}
                 </td>
             `
             teacherTableBody.appendChild(tr)
@@ -408,8 +408,8 @@
             <td>${student.blocked}</td>
             <td>
                     ${student.blocked === false ?
-                `<form action="/api/admin/student/block/${student._id}" method="post"><button class="btn btn-danger" type="submit" data-i18n="block"></button></form>` :
-                `<form action="/api/admin/student/unblock/${student._id}" method="post"><button class="btn btn-success" type="submit" data-i18n="unblock"></button></form>`}
+                `<form action="/api/admin/student/block/${student._id}" method="post"><button class="btn btn-danger" type="submit" data-i18n="block">Блок</button></form>` :
+                `<form action="/api/admin/student/unblock/${student._id}" method="post"><button class="btn btn-success" type="submit" data-i18n="unblock">Блоктан шығару</button></form>`}
                 </td>
         `
             studentTableBody.appendChild(tr)
@@ -443,7 +443,9 @@
         const savedLanguage = localStorage.getItem('language')
         const language = savedLanguage || 'kz'
 
-        const monthElement = document.querySelector(`option[value="${month}"]`)
+        const monthElement = document.createElement('option')
+        monthElement.value = month
+        monthElement.setAttribute('data-i18n', `${month}`)
         if (monthElement) {
             const key = monthElement.getAttribute('data-i18n')
             return i18n[language][key] || ''
@@ -451,11 +453,6 @@
 
         return ''
     }
-
-    // function getMonthName(month) {
-    //     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    //     return monthNames[month - 1] || ''
-    // }
 
     function extractIdsFromUrl(url) {
         const segments = url.split("/")

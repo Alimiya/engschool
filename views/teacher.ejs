@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="kz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,10 +59,9 @@
         <div id="calendar" class="calendar"></div>
     </div>
 </div>
-<script type="module" defer>
+<script src="/i18n.js" type="module" defer>
 </script>
-<script type="module">
-    import { i18nPromises } from '/i18n.js'
+<script>
     async function fetchTeacherDataAndRenderCalendar() {
         const url = window.location.href
         const { teacherId } = extractIdsFromUrl(url)
@@ -130,7 +129,7 @@
                 yearsAndMonths[selectedYear].forEach(month => {
                     const option = document.createElement('option')
                     option.value = month
-                    option.innerText = getMonthName(month)
+                    option.dataset.i18n = month
                     monthSelect.appendChild(option)
                 })
             }
@@ -235,20 +234,6 @@
         table.appendChild(tbody)
 
         calendarElement.appendChild(table)
-    }
-
-    function getMonthName(month) {
-        console.log(month)
-        console.log(i18nPromises.months)
-        const monthNames = i18nPromises.months
-        return monthNames[month - 1] || ''
-    }
-
-    function getDayOfWeek(dateString) {
-        const days = i18nPromises.days
-        const date = new Date(dateString)
-        const dayIndex = date.getDay()
-        return days[dayIndex] || ''
     }
 
     function handleCalendarDayClick(day) {
