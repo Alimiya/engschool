@@ -50,6 +50,10 @@ exports.addLessons = async (req, res) => {
     res.render('components/addLessonDays', {currentPage: 'subteacher', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
 }
 
+exports.updateLessons = async (req, res) => {
+    res.render('components/updateLessonDays', {currentPage: 'subteacher', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
+}
+
 exports.getAttendance = async (req, res) => {
     res.render('components/getAttendance', {currentPage: 'subteacher', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
 }

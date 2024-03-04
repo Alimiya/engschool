@@ -85,13 +85,11 @@ bot.on('message', async (msg) => {
         await bot.sendMessage(chatId, 'Введите логин')
         bot.once('message', async (msg) => {
             const username = msg.text.trim()
-            console.log(username)
 
             await bot.sendMessage(chatId, 'Введите пароль')
 
             bot.once('message', async (msg) => {
                 const password = msg.text.trim()
-            console.log(password)
 
                 try {
                     let user

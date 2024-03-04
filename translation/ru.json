@@ -1,4 +1,5 @@
 {
+  "languages": "Языки",
   "login": "Войти",
   "username": "Имя пользователя",
   "password": "Пароль",
@@ -50,6 +51,7 @@
 
   "student": "Студент",
   "add-lessons": "Добавить урок",
+  "update-lessons": "Обновить уроки",
   "create": "Создать",
   "add": "Добавить",
   "create-class": "Создать класс",

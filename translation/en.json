@@ -1,4 +1,5 @@
 {
+  "languages": "Languages",
   "login": "Login",
   "username": "Username",
   "password": "Password",
@@ -51,6 +52,7 @@
   "student": "Student",
 
   "add-lessons": "Add lessons",
+  "update-lessons": "Update lessons",
   "create": "Create",
   "add": "Add",
   "create-class": "Create class",

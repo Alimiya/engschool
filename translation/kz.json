@@ -1,4 +1,5 @@
 {
+  "languages": "Тілдер",
   "login": "Кіру",
   "username": "Пайдаланушы аты",
   "password": "Құпия сөз",
@@ -50,6 +51,7 @@
 
   "student": "Студент",
   "add-lessons": "Сабақтарды қосу",
+  "update-lessons": "Сабақтарды жаңарту",
   "create": "Құру",
   "add": "Қосу",
   "create-class": "Сыныпты құру",

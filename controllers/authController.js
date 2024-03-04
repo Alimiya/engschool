@@ -36,7 +36,6 @@ exports.login = async (req, res) => {
             const validPassword = await bcrypt.compare(password, user.password)
             if (validPassword) {
                 userId = user._id
-                console.log(user)
                 token = generateManagerToken(user)
                 const currentDate = new Date().toLocaleString()
                 if (user.chat_id) await bot.sendMessage(user.chat_id, `Добро пожаловать Менеджер! Вы успешно вошли в систему был ${currentDate}`)

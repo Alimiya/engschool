@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/i18next/dist/umd/i18next.min.js"></script>
@@ -143,7 +145,7 @@
 
     async function fetchSchools() {
         try {
-            const response = await axios.get('http://localhost:3000/api/admin/schools')
+            const response = await axios.get('https://sch-eng.live/api/admin/schools')
             const schools = response.data
 
             schools.forEach(school => {
@@ -163,15 +165,15 @@
         let url = ''
 
         if (categorySelect.value === 'manager') {
-            url = 'http://localhost:3000/api/admin/managers'
+            url = 'https://sch-eng.live/api/admin/managers'
         } else if (categorySelect.value === 'teacher') {
             if (!schoolId) {
                 clearTeacherTable()
                 return
             }
-            url = 'http://localhost:3000/api/admin/teachers'
+            url = 'https://sch-eng.live/api/admin/teachers'
         } else if (categorySelect.value === 'class') {
-            url = 'http://localhost:3000/api/admin/classes'
+            url = 'https://sch-eng.live/api/admin/classes'
         }
 
 
@@ -389,7 +391,7 @@
         teacherTable.style.display = 'none'
         managerTable.style.display = 'none'
         studentTable.style.display = 'table'
-        const url = `http://localhost:3000/api/admin/class/${classId}`
+        const url = `https://sch-eng.live/api/admin/class/${classId}`
         const response = await axios.get(url)
         const classData = response.data
         const students = data || classData.students

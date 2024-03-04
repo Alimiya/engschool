@@ -17,6 +17,7 @@ router.get('/profile/teacher/:id/class/create', Controller.createClass)
 router.get('/profile/teacher/:id/class/add/students', Controller.addStudentToClass)
 router.get('/profile/teacher/:id/class/add/schedule', Controller.createClassSchedule)
 router.get('/profile/teacher/:id/class/add/lessons', Controller.addLessons)
+router.get('/profile/teacher/:id/class/update/lessons', Controller.updateLessons)
 router.get('/profile/teacher/class/add/lesson/:selectedClassId/:selectedYear/:selectedMonth/:day', Controller.getAttendance)
 router.get('/profile/teacher/class/update/lesson/:selectedClassId/:selectedYear/:selectedMonth/:day', Controller.updateAttendance)
 

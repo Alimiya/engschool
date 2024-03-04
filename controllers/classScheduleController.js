@@ -95,6 +95,33 @@ exports.selectLessonDays = async (req, res) => {
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
         console.log(err)
-        return res.status(500).json({ message: 'Internal server error' })
+    }
+}
+
+exports.updateLessonDays = async (req, res) => {
+    const teacherId = req.user._id
+    const { classScheduleId, lessonDays } = req.body
+
+    try {
+        const schedule = await ClassSchedule.findById(classScheduleId)
+
+        if (!schedule) return res.json({ message: 'Class schedule not found' })
+
+        const parsedLessonDays = JSON.parse(lessonDays)
+
+        if (!Array.isArray(parsedLessonDays)) return res.json({ message: 'Invalid lesson days format' })
+
+        const scheduledLessonDays = schedule.lessons.map(lesson => lesson.day)
+        const newLessonDays = parsedLessonDays.filter(day => !scheduledLessonDays.includes(day))
+
+        if (newLessonDays.length !== schedule.numberOfLessons) return res.json({ message: 'You exceeded the number of lessons' })
+
+        schedule.lessonDays = newLessonDays
+
+        await schedule.save()
+
+        res.redirect(`/profile/teacher/${teacherId}`)
+    } catch (err) {
+        console.log(err)
     }
 }
