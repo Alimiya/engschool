@@ -10,22 +10,15 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         .hidden{
-            display: none
+            display: none !important;
         }
-         .calendar-day:hover {
-             background-color: #f0f0f0;
-             cursor: pointer;
-         }
         .has-lesson {
-            color: red;
-            cursor: pointer;
+            background-color: red !important;
+            cursor: pointer
         }
-        .calendar-day:hover span {
-            color: red;
-        }
-        .has-lesson:hover span {
-            color: blue;
-        }
+         .lesson-present {
+             background-color: green !important
+         }
     </style>
 </head>
 <body>
@@ -35,44 +28,39 @@
         <div class="card-header" data-i18n="personal-info"></div>
         <div class="card-body">
             <h5 class="card-title" id="studentName"></h5>
-            <p class="card-text" id="studentClass" value="classId"></p>
+            <p class="card-text d-inline" value="classId" data-i18n="class"></p><span id="studentClass" class="d-inline-block"></span>
         </div>
     </div>
 
     <div class="mt-3">
         <select class="form-select mb-2" id="yearSelect">
+            <option value="" selected disabled data-i18n="select-year"></option>
         </select>
 
         <select class="form-select mb-2" id="monthSelect">
+            <option value="" selected disabled data-i18n="select-month"></option>
         </select>
     </div>
 
     <div class="mt-3">
-        <p class="card-header mb-2" id="attendance"></p>
+        <p class="card-header d-inline mb-2" id="pattendance" data-i18n="attendance"></p><span id="attendance" class="d-inline-block"></span>
         <div id="calendar" class="calendar mt-3"></div>
     </div>
 </div>
-<script src="/i18n.js" type="module"></script>
-<script>
+<script type="module" defer>
+    import i18n from "/i18n.js"
     document.getElementById('calendar').classList.add('hidden')
-    document.getElementById('attendance').classList.add('hidden')
+    document.getElementById('pattendance').classList.add('hidden')
     function fetchStudentDataAndRenderCalendar() {
         const url = window.location.href
         const {studentId} = extractIdsFromUrl(url)
 
-        const yearSelect = document.getElementById('yearSelect')
-        yearSelect.innerHTML = '<option value="" selected disabled data-i18n="select-year"></option>'
-        const monthSelect = document.getElementById('monthSelect')
-        monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
-
         axios.get(`https://sch-eng.live/api/student/${studentId}`)
             .then(function (response) {
                 const student = response.data.student
-                const attendance = student.lessons.length
 
                 document.getElementById('studentName').innerText = `${student.surname} ${student.name} ${student.lastname}`
-                document.getElementById('studentClass').innerText = `Class: ${student.class.name}`
-                document.getElementById('attendance').innerText = `Attendance: ${attendance}/12`
+                document.getElementById('studentClass').innerText = ` ${student.class.name}`
                 document.getElementById('studentClass').setAttribute('value', student.class._id)
 
                 const yearsAndMonths = getUniqueYearsAndMonths(student.class.schedule)
@@ -90,7 +78,6 @@
 
         if (selectedYear && selectedMonth) {
             fetchClassCalendarIfSelected(studentClassId, selectedYear, selectedMonth)
-            payForMonth(selectedYear, selectedMonth)
             showElements()
         } else {
             hideElements()
@@ -104,7 +91,6 @@
 
         if (selectedYear && selectedMonth) {
             fetchClassCalendarIfSelected(studentClassId, selectedYear, selectedMonth)
-            payForMonth(selectedYear, selectedMonth)
             showElements()
         } else {
             hideElements()
@@ -126,24 +112,23 @@
 
     function showElements() {
         document.getElementById('calendar').classList.remove('hidden')
-        document.getElementById('payButton').classList.remove('hidden')
-        document.getElementById('attendance').classList.remove('hidden')
+        document.getElementById('pattendance').classList.remove('hidden')
     }
 
     function hideElements() {
         document.getElementById('calendar').classList.add('hidden')
-        document.getElementById('payButton').classList.add('hidden')
-        document.getElementById('attendance').classList.add('hidden')
+        document.getElementById('pattendance').classList.add('hidden')
     }
 
     function fetchClassCalendar(classId, year, month) {
         axios.get(`https://sch-eng.live/api/classschedule/${classId}/${year}/${month}`)
             .then(function (response) {
                 const calendarData = response.data.calendar
-                const lessons = response.data.lessons.length
+                const lessons = response.data.lessons
                 const lessonDays = response.data.lessonDays
+                const lessonspresent = lessons.map(lesson => lesson.day)
 
-                renderCalendar(calendarData, lessons, lessonDays)
+                renderCalendar(calendarData, lessons, lessonDays, lessonspresent)
 
             })
             .catch(function (err) {
@@ -151,15 +136,7 @@
             })
     }
 
-    function payForMonth(year, month) {
-        const url = window.location.href
-        const {studentId} = extractIdsFromUrl(url)
-
-        const payForm = document.getElementById('payForm')
-        payForm.action = `/api/student/${studentId}/${year}/${month}`
-    }
-
-    function renderCalendar(calendarData, lessons, lessonDays) {
+    function renderCalendar(calendarData, lessons, lessonDays, lessonspresent) {
         const calendarElement = document.getElementById('calendar')
         calendarElement.innerHTML = ''
 
@@ -186,11 +163,11 @@
                 const td = document.createElement('td')
                 td.textContent = day ? day : ''
                 td.classList.add('calendar-day')
-                if (day) {
+                if (lessonspresent.includes(day)) {
                     td.classList.add('lesson-present')
                 }
                 if (lessonDays.includes(day)) {
-                    td.classList.add('has-lesson');
+                    td.classList.add('has-lesson')
                 }
 
                 weekRow.appendChild(td)
@@ -200,7 +177,7 @@
         table.appendChild(tbody)
 
         calendarElement.appendChild(table)
-        document.getElementById('attendance').innerText = `Attendance: ${lessons}/12`
+        document.getElementById('attendance').innerText = `${lessons.length}/12`
 
     }
 
@@ -219,7 +196,6 @@
 
     function renderYearSelect(yearsAndMonths) {
         const yearSelect = document.getElementById('yearSelect')
-        yearSelect.innerHTML = '<option value="" selected disabled data-i18n="select-year"></option>'
         Object.keys(yearsAndMonths).forEach(year => {
             const option = document.createElement('option')
             option.value = year
@@ -229,11 +205,11 @@
         yearSelect.addEventListener('change', function (event) {
             const selectedYear = event.target.value
             const monthSelect = document.getElementById('monthSelect')
-            monthSelect.innerHTML = '<option value="" selected disabled data-i18n="select-month"></option>'
             if (selectedYear) {
                 yearsAndMonths[selectedYear].forEach(month => {
                     const option = document.createElement('option')
                     option.value = month
+                    option.dataset.i18n= month
                     option.innerText = getMonthName(month)
                     monthSelect.appendChild(option)
                 })
@@ -248,7 +224,18 @@
     }
 
     function getMonthName(month) {
-        return i18n[currentLanguage].months[month - 1] || '';
+        const savedLanguage = localStorage.getItem('language')
+        const language = savedLanguage || 'kz'
+
+        const monthElement = document.createElement('option')
+        monthElement.value = month
+        monthElement.setAttribute('data-i18n', `${month}`)
+        if (monthElement) {
+            const key = monthElement.getAttribute('data-i18n')
+            return i18n[language][key] || ''
+        }
+
+        return ''
     }
 
     fetchStudentDataAndRenderCalendar()

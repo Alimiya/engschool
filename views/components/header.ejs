@@ -84,10 +84,17 @@
 <% } else { %>
     <header class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
+            <%if(currentPage === 'subadmin' || currentPage === 'subteacher'){%>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="redirectToProfile()">
+                <img width="20" height="20" src="https://img.icons8.com/ios/50/back--v3.png" alt="back--v3"/>
+            </button>
+            <%} else{%>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="goBack()">
                 <img width="20" height="20" src="https://img.icons8.com/ios/50/back--v3.png" alt="back--v3"/>
             </button>
+            <%}%>
             <a class="navbar-brand mx-auto" href="#">English Class</a>
             <div class="d-flex">
                 <div class="dropdown">
@@ -132,12 +139,25 @@
     </header>
 <% } %>
 <script>
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-            window.location.reload()
-        }
-    });
+    const urlHeader = window.location.href
+    const {id} = extractIdsFromUrl(urlHeader)
     function goBack() {
         window.history.back()
+    }
+    function extractIdsFromUrl(url) {
+        const segments = url.split("/")
+        const id = segments[5]
+        return {id}
+    }
+
+    const currentPage = "<%= currentPage %>"
+    function redirectToProfile() {
+        if (currentPage === 'subadmin' || currentPage === 'subteacher') {
+            if (currentPage === 'subteacher') {
+                window.location.href = `/profile/teacher/${id}`
+            } else {
+                window.location.href = `/profile/admin/${id}`
+            }
+        }
     }
 </script>

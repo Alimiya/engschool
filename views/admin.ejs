@@ -119,10 +119,10 @@
     </div>
 </div>
 </body>
-<script src="/i18n.js" type="module" defer></script>
-<script>
-    const debouncedFilterData = _.debounce(filterData, 3000)
-    const debouncedRenderManagerTable = _.debounce(renderManagerTable, 300);
+<script type="module" defer>
+    import i18n from "/i18n.js";
+
+    const debouncedFilterData = _.debounce(filterData, 300)
     const categorySelect = document.getElementById('categorySelect')
     const statusSelect = document.getElementById('statusSelect')
     const classOptions = document.getElementById('classOptions')
@@ -307,6 +307,7 @@
                 const option = document.createElement('option')
                 option.value = month
                 option.dataset.i18n = month
+                option.textContent = getMonthName(month)
                 monthSelect.appendChild(option)
             })
         })
@@ -365,9 +366,9 @@
     }
 
     function renderTeacherTable(data) {
-        teacherTable.style.display = 'table'
         managerTable.style.display = 'none'
         studentTable.style.display = 'none'
+        teacherTable.style.display = 'table'
 
         const teacherTableBody = document.getElementById('teacherTableBody')
         teacherTableBody.innerHTML = ''
@@ -428,6 +429,8 @@
         } else if (categorySelect.value === 'teacher'){
             schoolSelection.style.display = 'block'
             statusSelect.style.display = 'block'
+            managerTable.style.display = 'none'
+            studentTable.style.display = 'none'
             classOptions.style.display = 'none'
             fetchData()
         } else{
@@ -502,6 +505,9 @@
         fetchData()
         fetchSchools()
         setLanguage()
+        document.getElementById('languageSelect').addEventListener('change', () => {
+            setLanguage()
+        })
     })
 </script>
 </html>

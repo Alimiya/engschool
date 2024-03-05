@@ -49,3 +49,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error fetching translations:', error)
     }
 })
+export default i18n
