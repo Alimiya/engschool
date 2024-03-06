@@ -83,7 +83,19 @@ exports.getSchoolClasses = async (req, res) => {
     const schoolId = req.params.id
     try {
         const classes = await Class.find({ school: schoolId })
-        res.json({ classes })
+        res.json( classes )
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+exports.getSchoolStudents = async (req, res) => {
+    const schoolId = req.params.id
+    try {
+        const classes = await Class.find({ school: schoolId })
+        const classIds = classes.map(cls => cls._id)
+        const students = await Student.find({ class: { $in: classIds } })
+        res.json(students)
     } catch (err) {
         console.log(err)
     }
@@ -429,5 +441,37 @@ exports.getClassById = async (req, res) => {
         res.json(classInfo)
     } catch (err) {
         console.log(err)
+    }
+}
+
+exports.changeStudentClass = async (req, res) => {
+    const adminId = req.user._id
+    const { schoolId, studentId, classId } = req.body
+
+    try {
+        const school = await School.findById(schoolId)
+        if (!school) return res.json({ message: 'School not found' })
+
+        const student = await Student.findById(studentId)
+        if (!student) return res.json({ message: 'Student not found' })
+
+        const cls = await Class.findById(classId)
+        if (!cls) return res.json({ message: 'Class not found' })
+
+        if (student.class && student.class.toString() === classId) return res.json({ message: 'Student is already in this class' })
+
+        if (student.class) {
+            await Class.findByIdAndUpdate(student.class, { $pull: { students: studentId } })
+        }
+
+        student.class = classId
+        await student.save()
+
+        cls.students.push(studentId)
+        await cls.save()
+
+    res.redirect(`/profile/admin/${adminId}`)
+    } catch (err) {
+        console.error(err)
     }
 }

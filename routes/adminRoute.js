@@ -11,6 +11,7 @@ router.post('/school/manager/update', verifyAdminToken(ADMIN_TOKEN_SECRET), Cont
 router.get('/school/:id/teachers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolTeachers)
 router.get('/school/:id/managers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolManager)
 router.get('/school/:id/classes', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolClasses)
+router.get('/school/:id/students', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchoolStudents)
 router.get('/schools', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getSchools)
 
 router.get('/manager/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getManagerById)
@@ -27,6 +28,7 @@ router.get('/teachers', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getTeac
 router.get('/teachers/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getTeachersBySchool)
 
 router.get('/student/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.getStudentById)
+router.post('/student/change', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.changeStudentClass)
 router.post('/student/block/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.blockStudent)
 router.post('/student/unblock/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.unblockStudent)
 router.post('/student/add/:id', verifyAdminToken(ADMIN_TOKEN_SECRET), Controller.addStudent)

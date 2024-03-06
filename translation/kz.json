@@ -48,6 +48,8 @@
   "lessons-attended": "Қатысқан сабақтар",
   "days-attended": "Қатысқан күндер",
   "pay-button": "Төлеу",
+  "add-payment": "Төлем қосу",
+  "paid-lessons": "Төленген сабақтар",
 
   "student": "Студент",
   "add-lessons": "Сабақтарды қосу",
@@ -69,6 +71,9 @@
   "add-update-lessons": "Сабақтарды қосу/жаңарту",
   "teaching-classes": "Сыныптар: ",
   "attendance": "Қатысу ",
+  "change-student-class": "Студенттің сыныбын ауыстыру",
+  "change": "Ауыстыру",
+  "select-student": "Студентті таңдау",
 
   "january" :   "Қаңтар",
   "february" :  "Ақпан",

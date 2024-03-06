@@ -84,7 +84,7 @@
 <% } else { %>
     <header class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <%if(currentPage === 'subadmin' || currentPage === 'subteacher'){%>
+            <%if(currentPage === 'subadmin' || currentPage === 'subteacher' || currentPage === 'submanager'){%>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onclick="redirectToProfile()">
                 <img width="20" height="20" src="https://img.icons8.com/ios/50/back--v3.png" alt="back--v3"/>
@@ -152,11 +152,13 @@
 
     const currentPage = "<%= currentPage %>"
     function redirectToProfile() {
-        if (currentPage === 'subadmin' || currentPage === 'subteacher') {
+        if (currentPage === 'subadmin' || currentPage === 'subteacher' || currentPage === 'submanager') {
             if (currentPage === 'subteacher') {
                 window.location.href = `/profile/teacher/${id}`
-            } else {
+            } else if (currentPage === 'subadmin'){
                 window.location.href = `/profile/admin/${id}`
+            } else{
+                window.location.href = `/profile/manager/${id}`
             }
         }
     }

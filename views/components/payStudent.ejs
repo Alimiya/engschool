@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="kz">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Payment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body class="text-center">
+<%- include('header') %>
+<section class="vh-100">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem">
+                    <form method="post" class="card-body p-5 text-center" id="formContainer">
+                        <h3 class="mb-2" data-i18n="add-payment"></h3>
+                        <div><h5 class="mb-4 d-inline" data-i18n="number-of-lessons"></h5>- <h5 class="d-inline-block" id="numberOfLessons"></h5></div>
+
+                        <div class="form-floating mb-4 mt-3">
+                            <input type="number" id="payment" name="payment" class="form-control" required/>
+                            <label class="form-label" for="payment" data-i18n="payment"></label>
+                        </div>
+
+                        <button type="submit" class="w-100 btn btn-lg btn-primary mb-2" data-i18n="add"></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="/i18n.js" type="module"></script>
+<script>
+    function extractIdsFromUrl(url) {
+        const segments = url.split("/")
+        const studentId = segments[7]
+        const year = segments[8]
+        const month = segments[9]
+        return { studentId, year, month }
+    }
+    document.addEventListener("DOMContentLoaded", async () => {
+
+        try {
+            url = window.location.href
+            const {studentId, year, month} = extractIdsFromUrl(url)
+            const formContainer = document.getElementById('formContainer')
+            formContainer.action = `/api/manager/${studentId}/${year}/${month}`
+
+            const student = await axios.get(`https://sch-eng.live/api/manager/student/${studentId}`)
+            const classId = await student.data.class
+
+            const schedule = await axios.get(`https://sch-eng.live/api/classschedule/${classId}/${year}/${month}`)
+            const numberOfLessons = await schedule.data.numberOfLessons
+            document.getElementById('numberOfLessons').innerText = numberOfLessons
+
+        } catch (error) {
+            console.error("Error fetching students:", error)
+        }
+    })
+</script>
+</body>
+</html>

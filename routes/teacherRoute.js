@@ -6,6 +6,7 @@ const {TEACHER_TOKEN_SECRET} = process.env
 
 router.get('/student/:id', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getStudentById)
 router.post('/student/create', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.createStudent)
+router.post('/student/change', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.changeStudentClass)
 router.get('/students', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getStudents)
 
 router.get('/class/:id', verifyTeacherToken(TEACHER_TOKEN_SECRET), Controller.getClassById)

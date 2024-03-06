@@ -2,6 +2,27 @@ const ClassSchedule = require('../models/classScheduleModel')
 const Class = require('../models/classModel')
 const {generateMonthCalendar} = require('../middlewares/calendar')
 
+exports.selectLessonDays = async (req, res) => {
+    const teacherId = req.user._id
+    const { classScheduleId, lessonDays } = req.body
+
+    try {
+        const schedule = await ClassSchedule.findById(classScheduleId)
+        const parsedLessonDays = JSON.parse(lessonDays)
+
+        if (!schedule) return res.json({ message: 'Class schedule not found' })
+        if (!Array.isArray(parsedLessonDays)) return res.json({ message: 'Invalid lesson days format' })
+        if (parsedLessonDays.length !== schedule.numberOfLessons) return res.json({ message: 'You exceeded the number of lessons' })
+
+        schedule.lessonDays = parsedLessonDays
+        await schedule.save()
+
+        res.redirect(`/profile/teacher/${teacherId}`)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 exports.createClassSchedule = async (req, res) => {
     const { classId, year, month, selectedLessonDays, numberOfLessons } = req.body
     const teacherId = req.user._id
@@ -10,10 +31,7 @@ exports.createClassSchedule = async (req, res) => {
         let existingSchedule = await ClassSchedule.findOne({ classId, year, month })
 
         if (existingSchedule) {
-            existingSchedule.selectedLessonDays = selectedLessonDays
-
-            existingSchedule = await existingSchedule.save()
-            res.json({ existingSchedule })
+            return res.json({ message:'Schedule already exists'})
         } else {
             const monthCalendar = await generateMonthCalendar(year, month)
 
@@ -25,6 +43,13 @@ exports.createClassSchedule = async (req, res) => {
                 calendar: monthCalendar,
                 numberOfLessons
             })
+
+            const classStudents = await Class.findById(classId).populate('students')
+
+            for (const student of classStudents.students) {
+                student.schedule.push(newSchedule)
+                await student.save()
+            }
 
             await newSchedule.save()
             await Class.findByIdAndUpdate(classId, { $push: { schedule: newSchedule } })
@@ -70,33 +95,21 @@ exports.getCurrentSchedule = async (req, res) => {
     const {classId, year, month} = req.params
 
     try {
-        const schedule = await ClassSchedule.findOne({ classId, year, month }).populate('lessons')
+        const schedule = await ClassSchedule.findOne({ classId, year, month }).populate([
+            {
+                path:'lessons'
+            },
+            {
+                path:'teacher',
+                select:['surname','name','lastname']
+            }
+        ])
         res.json(schedule)
     } catch (err) {
         console.log(err)
     }
 }
 
-exports.selectLessonDays = async (req, res) => {
-    const teacherId = req.user._id
-    const { classScheduleId, lessonDays } = req.body
-
-    try {
-        const schedule = await ClassSchedule.findById(classScheduleId)
-        const parsedLessonDays = JSON.parse(lessonDays)
-
-        if (!schedule) return res.json({ message: 'Class schedule not found' })
-        if (!Array.isArray(parsedLessonDays)) return res.json({ message: 'Invalid lesson days format' })
-        if (parsedLessonDays.length !== schedule.numberOfLessons) return res.json({ message: 'You exceeded the number of lessons' })
-
-        schedule.lessonDays = parsedLessonDays
-        await schedule.save()
-
-        res.redirect(`/profile/teacher/${teacherId}`)
-    } catch (err) {
-        console.log(err)
-    }
-}
 
 exports.updateLessonDays = async (req, res) => {
     const teacherId = req.user._id

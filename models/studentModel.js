@@ -14,9 +14,10 @@ const studentSchema = mongoose.Schema({
     payments:[{
         year: {type: Number, required: true},
         month: {type: Number, required: true},
-        payment: {type: Boolean, default: false}
+        payment: {type: Number, default: 0}
     }],
-    createdAt:{type:Date, default:Date.now()}
+    createdAt:{type:Date, default:Date.now()},
+    schedule:[{type:mongoose.Schema.Types.ObjectId, ref:'ClassSchedule'}]
 })
 
 const Student = mongoose.model('Student', studentSchema)

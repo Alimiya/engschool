@@ -48,9 +48,10 @@
   "lessons-attended": "Lessons attended",
   "days-attended": "Days attended",
   "pay-button": "Pay",
+  "add-payment": "Add payment",
+  "paid-lessons": "Paid lessons",
 
   "student": "Student",
-
   "add-lessons": "Add lessons",
   "update-lessons": "Update lessons",
   "create": "Create",
@@ -70,6 +71,9 @@
   "add-update-lessons": "Add/Update lessons",
   "teaching-classes": "Classes: ",
   "attendance": "Attendance ",
+  "change-student-class": "Change student class",
+  "change": "Change",
+  "select-student": "Select student",
 
   "january" : "January",
   "february" : "February",

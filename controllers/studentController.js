@@ -1,4 +1,5 @@
 const Student = require('../models/studentModel')
+const ClassSchedule = require('../models/classScheduleModel')
 
 exports.getStudentById = async (req, res) => {
     const studentId = req.params.id
@@ -10,7 +11,7 @@ exports.getStudentById = async (req, res) => {
                 populate: {path: 'schedule'}
             },
             {
-                path:'lessons'
+                path: 'lessons'
             }
         ])
 
@@ -21,20 +22,31 @@ exports.getStudentById = async (req, res) => {
 }
 
 exports.payDate = async (req, res) => {
-    const studentId = req.params.id
-    const {year, month} = req.params
+    const managerId = req.user._id
+    const {year, month, studentId} = req.params
+    const {payment} = req.body
 
     try {
         const student = await Student.findById(studentId)
-        const existingPayment = student.payments.find(p => p.year === +year && p.month === +month)
-
         if (!student) return res.json({message: "Student not found"})
-        if (existingPayment) return res.json({message: "Payment already exists for this year and month"})
+        const schedule = await ClassSchedule.find({classId: student.class, year, month})
+        if (payment > schedule[0].numberOfLessons || payment <= 0) return res.json({message: "Write correct number"})
 
-        student.payments.push({year: +year, month: +month, payment: true})
+        const existingPayments = student.payments.find(p => p.year === +year && p.month === +month)
+        const totalPayments = existingPayments ? existingPayments.payment + parseInt(payment, 10) : parseInt(payment, 10)
+
+        if (totalPayments > schedule[0].numberOfLessons) return res.json({message: "Total payments exceed the total number of lessons"})
+
+        if (existingPayments) {
+            existingPayments.payment += parseInt(payment, 10)
+        } else {
+            student.payments.push({year: +year, month: +month, payment})
+        }
+
         await student.save()
 
-        res.redirect(req.get('referer'))
+
+        res.redirect(`/profile/manager/${managerId}`)
     } catch (err) {
         console.log(err)
     }

@@ -48,6 +48,8 @@
   "lessons-attended": "Посещенные уроки",
   "days-attended": "Посещенные дни",
   "pay-button": "Оплатить",
+  "add-payment": "Добавить оплату",
+  "paid-lessons": "Оплаченные уроки",
 
   "student": "Студент",
   "add-lessons": "Добавить урок",
@@ -69,6 +71,9 @@
   "add-update-lessons": "Добавить/Обновить уроки",
   "teaching-classes": "Классы: ",
   "attendance": "Посещаемость ",
+  "change-student-class": "Поменять класс студента",
+  "change": "Поменять",
+  "select-student": "Выбрать студента",
 
   "january" :   "Январь",
   "february" :  "Февраль",

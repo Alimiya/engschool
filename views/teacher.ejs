@@ -26,8 +26,16 @@
         <div class="card-header" data-i18n="personal-info">
         </div>
         <div class="card-body">
-            <h5 class="card-title" id="teacherName"></h5>
-            <p class="card-text d-inline" data-i18n="teaching-classes"></p><span id="teacherClasses" class="d-inline-block"></span>
+            <div>
+                <p class="card-text d-inline" data-i18n="surname"></p><span id="surname" class="d-inline-block"></span>
+            </div>
+            <div>
+                <p class="card-text d-inline" data-i18n="name"></p><span id="name" class="d-inline-block"></span>
+            </div>
+            <div>
+                <p class="card-text d-inline" data-i18n="lastname"></p><span id="lastname" class="d-inline-block"></span>
+            </div>
+            <div><p class="card-text d-inline" data-i18n="teaching-classes"></p><span id="teacherClasses" class="d-inline-block"></span></div>
         </div>
     </div>
 
@@ -35,6 +43,9 @@
         <div class="card-body">
             <button class="btn btn-primary mt-2"
                     data-i18n="create-student" id="createStudent">
+            </button>
+            <button class="btn btn-primary mt-2"
+                    data-i18n="change-student-class" id="changeStudent">
             </button>
             <button class="btn btn-primary mt-2"
                     data-i18n="create-class" id="createClass">
@@ -85,7 +96,9 @@
             const response = await axios.get(`https://sch-eng.live/api/teacher/${teacherId}`)
             const teacher = response.data.teacher[0]
 
-            document.getElementById('teacherName').innerText = `${teacher.surname} ${teacher.name} ${teacher.lastname}`
+            document.getElementById('surname').innerText = `${teacher.surname}`
+            document.getElementById('name').innerText = `${teacher.name}`
+            document.getElementById('lastname').innerText = `${teacher.lastname}`
             const teacherClasses = teacher.classes.map(cls => cls.name).join(', ')
             document.getElementById('teacherClasses').innerText = ` ${teacherClasses}`
 
@@ -300,6 +313,7 @@
     }
 
     const createStudent = document.getElementById('createStudent')
+    const changeStudent = document.getElementById('changeStudent')
     const createSchedule = document.getElementById('createSchedule')
     const createClass = document.getElementById('createClass')
     const addUpdateLessons = document.getElementById('addUpdateLessons')
@@ -308,6 +322,9 @@
 
     createStudent.addEventListener('click',function() {
         window.location.href = `/profile/teacher/${teacherId}/student/create`
+    })
+    changeStudent.addEventListener('click',function() {
+        window.location.href = `/profile/teacher/${teacherId}/student/change`
     })
     createSchedule.addEventListener('click', function() {
         window.location.href = `/profile/teacher/${teacherId}/class/add/schedule`

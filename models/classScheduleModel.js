@@ -10,7 +10,8 @@ const classScheduleSchema = mongoose.Schema({
     },
     numberOfLessons: { type: Number, min:10, max:12, required: true },
     lessonDays: [{ type: Number, required: true }],
-    lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }]
+    lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
+    teacher:{type:mongoose.Schema.Types.ObjectId, ref:'Teacher'}
 })
 
 const ClassSchedule = mongoose.model('ClassSchedule', classScheduleSchema)

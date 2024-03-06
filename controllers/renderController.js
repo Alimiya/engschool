@@ -69,3 +69,15 @@ exports.addManagerToSchool = async (req, res) => {
 exports.updateSchoolManager = async (req, res) => {
     res.render('components/updateSchoolManager', {currentPage: 'subadmin', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
 }
+
+exports.changeStudentTeacher = async (req, res) => {
+    res.render('components/changeStudentTeacher', {currentPage: 'subteacher', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
+}
+
+exports.changeStudentAdmin = async (req, res) => {
+    res.render('components/changeStudentAdmin', {currentPage: 'subadmin', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
+}
+
+exports.payStudent = async (req, res) => {
+    res.render('components/payStudent', {currentPage: 'submanager', admin: req.cookies.admin, manager: req.cookies.manager, teacher: req.cookies.teacher, student: req.cookies.student})
+}

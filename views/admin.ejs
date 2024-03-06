@@ -74,6 +74,7 @@
     <button class="btn btn-primary mt-2" id="createManager" data-i18n="create-manager"></button>
     <button class="btn btn-primary mt-2" id="createTeacher" data-i18n="create-teacher"></button>
     <button class="btn btn-primary mt-2" id="addStudent" data-i18n="add-student"></button>
+    <button class="btn btn-primary mt-2" id="changeStudent" data-i18n="change-student-class"></button>
     <button class="btn btn-primary mt-2" id="addManagerToSchool" data-i18n="add-manager-to-school"></button>
     <button class="btn btn-primary mt-2" id="updateSchoolManager" data-i18n="update-school-manager"></button>
 </div>
@@ -406,7 +407,7 @@
             tr.innerHTML = `
             <td>${student.surname} ${student.name} ${student.lastname}</td>
             <td>
-                ${paymentForMonth ? paymentForMonth.payment : 'false'}
+                ${paymentForMonth ? paymentForMonth.payment : 0}
             </td>
             <td>${student.blocked}</td>
             <td>
@@ -471,6 +472,7 @@
     const createManager = document.getElementById('createManager')
     const createTeacher = document.getElementById('createTeacher')
     const addStudent = document.getElementById('addStudent')
+    const changeStudent = document.getElementById('changeStudent')
     const addManagerToSchool = document.getElementById('addManagerToSchool')
     const updateSchoolManager = document.getElementById('updateSchoolManager')
 
@@ -482,6 +484,9 @@
     })
     addStudent.addEventListener('click', () => {
         window.location.href = `/profile/admin/${adminId}/student/add`
+    })
+    changeStudent.addEventListener('click', () => {
+        window.location.href = `/profile/admin/${adminId}/student/change`
     })
     addManagerToSchool.addEventListener('click', () => {
         window.location.href = `/profile/admin/${adminId}/school/manager/add`

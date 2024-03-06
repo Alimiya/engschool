@@ -15,8 +15,8 @@
 <%- include('components/header') %>
 <div class="container mt-4">
     <div class="card">
+        <div class="card-title" data-i18n="personal-info"></div>
         <div class="card-body">
-            <h5 class="card-title" data-i18n="personal-info"></h5>
             <div>
                 <p class="card-text d-inline" data-i18n="surname"></p><span id="surname" class="d-inline-block"></span>
             </div>
@@ -24,7 +24,8 @@
                 <p class="card-text d-inline" data-i18n="name"></p><span id="name" class="d-inline-block"></span>
             </div>
             <div>
-                <p class="card-text d-inline" data-i18n="lastname"></p><span id="lastname" class="d-inline-block"></span>
+                <p class="card-text d-inline" data-i18n="lastname"></p><span id="lastname"
+                                                                             class="d-inline-block"></span>
             </div>
         </div>
     </div>
@@ -55,23 +56,35 @@
     <div class="card mt-4" id="classInfoCard" style="display: none">
         <div class="card-body">
             <h5 class="card-title" data-i18n="class-info"></h5>
-            <div><p class="card-text d-inline" data-i18n="class-name"></p><span id="className" class="d-inline-block"></span></div>
-            <div><p class="card-text d-inline" data-i18n="number-of-lessons"></p><span id="numberOfLessons" class="d-inline-block"></span></div>
-            <div><p class="card-text d-inline" data-i18n="lesson-days"></p><span id="lessonDays" class="d-inline-block"></span></div>
-            <div><p class="card-text d-inline" data-i18n="teacher"></p><span id="teacher" class="d-inline-block"></span></div>
+            <div><p class="card-text d-inline" data-i18n="class-name"></p><span id="className"
+                                                                                class="d-inline-block"></span></div>
+            <div><p class="card-text d-inline" data-i18n="number-of-lessons"></p><span id="numberOfLessons"
+                                                                                       class="d-inline-block"></span>
+            </div>
+            <div><p class="card-text d-inline" data-i18n="lesson-days"></p><span id="lessonDays"
+                                                                                 class="d-inline-block"></span></div>
+            <div><p class="card-text d-inline" data-i18n="teacher"></p><span id="teacher" class="d-inline-block"></span>
+            </div>
             <h5 class="card-title mt-3" data-i18n="students"></h5>
             <ul id="studentsList"></ul>
             <div id="studentDetails" style="display: none;">
-                <div><p class="card-text d-inline" data-i18n="full-name"></p><span id="fullNameStudent" class="d-inline-block"></span></div>
-                <div><p class="card-text d-inline" data-i18n="lessons-attended"></p><span id="lessonsAttendedStudent" class="d-inline-block"></span></div>
-                <div><p class="card-text d-inline" data-i18n="days-attended"></p><span id="daysAttendedStudent" class="d-inline-block"></span></div>
-                <div><p class="card-text d-inline" data-i18n="payment"></p><span id="paymentStudent" class="d-inline-block"></span></div>
+                <div><p class="card-text d-inline" data-i18n="full-name"></p><span id="fullNameStudent"
+                                                                                   class="d-inline-block"></span></div>
+                <div><p class="card-text d-inline" data-i18n="lessons-attended"></p><span id="lessonsAttendedStudent"
+                                                                                          class="d-inline-block"></span>
+                </div>
+                <div><p class="card-text d-inline" data-i18n="days-attended"></p><span id="daysAttendedStudent"
+                                                                                       class="d-inline-block"></span>
+                </div>
+                <div><p class="card-text d-inline" data-i18n="payment"></p><span id="paymentStudent"
+                                                                                 class="d-inline-block"></span></div>
             </div>
         </div>
     </div>
 </div>
 <script type="module" defer>
     import i18n from "/i18n.js"
+
     function fetchManagerDataAndRenderCalendar() {
         const url = window.location.href
         const {managerId} = extractIdsFromUrl(url)
@@ -80,7 +93,7 @@
         const yearSelect = document.getElementById('yearSelect')
         const monthSelect = document.getElementById('monthSelect')
 
-        axios.get(`https://sch-eng.live/api/manager/${managerId}`)
+        axios.get(`http://localhost:3000/api/manager/${managerId}`)
             .then(function (response) {
                 const manager = response.data.manager
                 document.getElementById('surname').innerText = manager.surname
@@ -166,20 +179,22 @@
     })
 
     function fetchClassInfo(classId, year, month) {
-        axios.get(`https://sch-eng.live/api/manager/class/${classId}`)
+        const url = window.location.href
+        const {managerId} = extractIdsFromUrl(url)
+        axios.get(`http://localhost:3000/api/manager/class/${classId}`)
             .then(function (response) {
                 const classInfo = response.data.classInfo
-                const selectedSchedule = classInfo.schedule.find(schedule => schedule.year == year && schedule.month == month)
+                const selectedSchedule = classInfo[0].schedule.find(schedule => schedule.year == year && schedule.month == month)
                 if (selectedSchedule) {
                     let lastSelectedItem = null
-                    document.getElementById('className').innerText = classInfo.name
+                    document.getElementById('className').innerText = classInfo[0].name
                     document.getElementById('numberOfLessons').innerText = selectedSchedule.numberOfLessons
                     document.getElementById('lessonDays').innerText = selectedSchedule.lessonDays
-                    document.getElementById('teacher').innerText = `${classInfo.teacher.surname} ${classInfo.teacher.name} ${classInfo.teacher.lastname}`
+                    document.getElementById('teacher').innerText = `${classInfo[0].teacher.surname} ${classInfo[0].teacher.name} ${classInfo[0].teacher.lastname}`
                     const studentsList = document.getElementById('studentsList')
                     studentsList.innerHTML = ''
 
-                    classInfo.students.forEach(student => {
+                    classInfo[0].students.forEach(student => {
                         const listItem = document.createElement('li')
                         const lessonsCount = student.lessons.filter(lesson => lesson.month == month).length
                         const paymentForMonth = student.payments.find(payment => payment.year == year && payment.month == month)
@@ -191,7 +206,6 @@
                         listItem.style.textDecoration = 'underline'
 
                         const payButton = document.createElement('button')
-                        payButton.innerText = 'Pay'
                         payButton.classList.add('btn', 'btn-primary', 'mb-1')
                         payButton.setAttribute('data-i18n', 'pay-button')
 
@@ -206,18 +220,11 @@
                             lastSelectedItem = listItem
                             displayStudentDetails(student, lessonsCount, paymentForMonth, daysAttended, month, year, selectedSchedule)
                         })
-                        if (paymentForMonth && paymentForMonth.payment === true) {
+                        if (paymentForMonth && paymentForMonth.payment === selectedSchedule.numberOfLessons) {
                             payButton.style.display = 'none'
                         } else {
-                            payButton.addEventListener('click', (event) => {
-                                event.stopPropagation()
-                                axios.post(`https://sch-eng.live/api/manager/${student._id}/${year}/${month}`)
-                                    .then(response => {
-                                        window.location.reload()
-                                    })
-                                    .catch(err => {
-                                        console.log(err)
-                                    })
+                            payButton.addEventListener('click', () => {
+                                window.location.href = `/profile/manager/${managerId}/student/${student._id}/${year}/${month}`
                             })
                         }
                         listItem.appendChild(space)
@@ -240,7 +247,8 @@
         document.getElementById('fullNameStudent').innerText = `: ${student.surname} ${student.name} ${student.lastname}`
         document.getElementById('lessonsAttendedStudent').innerText = `: ${lessonsCount}/${selectedSchedule.numberOfLessons}`
         document.getElementById('daysAttendedStudent').innerText = `: ${daysAttended.join(', ')}`
-        document.getElementById('paymentStudent').innerText = `: ${paymentForMonth ? paymentForMonth.payment : 'false'}`    }
+        document.getElementById('paymentStudent').innerText = `: ${paymentForMonth ? paymentForMonth.payment : 0}/${selectedSchedule.numberOfLessons}`
+    }
 
     function extractIdsFromUrl(url) {
         const segments = url.split('/')
