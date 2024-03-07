@@ -93,7 +93,7 @@
         const yearSelect = document.getElementById('yearSelect')
         const monthSelect = document.getElementById('monthSelect')
 
-        axios.get(`http://localhost:3000/api/manager/${managerId}`)
+        axios.get(`https://sch-eng.live/api/manager/${managerId}`)
             .then(function (response) {
                 const manager = response.data.manager
                 document.getElementById('surname').innerText = manager.surname
@@ -181,7 +181,7 @@
     function fetchClassInfo(classId, year, month) {
         const url = window.location.href
         const {managerId} = extractIdsFromUrl(url)
-        axios.get(`http://localhost:3000/api/manager/class/${classId}`)
+        axios.get(`https://sch-eng.live/api/manager/class/${classId}`)
             .then(function (response) {
                 const classInfo = response.data.classInfo
                 const selectedSchedule = classInfo[0].schedule.find(schedule => schedule.year == year && schedule.month == month)
@@ -207,6 +207,7 @@
 
                         const payButton = document.createElement('button')
                         payButton.classList.add('btn', 'btn-primary', 'mb-1')
+                        payButton.textContent = getPayButtonText()
                         payButton.setAttribute('data-i18n', 'pay-button')
 
                         const space = document.createElement('span')
@@ -270,6 +271,22 @@
 
         return ''
     }
+
+    function getPayButtonText() {
+        const savedLanguage = localStorage.getItem('language');
+        const language = savedLanguage || 'kz';
+
+        const buttonElement = document.createElement('button');
+        buttonElement.setAttribute('data-i18n', 'pay-button');
+
+        if (buttonElement) {
+            const key = buttonElement.getAttribute('data-i18n');
+            return i18n[language][key] || '';
+        }
+
+        return '';
+    }
+
 
     document.addEventListener('DOMContentLoaded', () => {
         fetchManagerDataAndRenderCalendar()
