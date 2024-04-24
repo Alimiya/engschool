@@ -21,7 +21,7 @@
                         <div><h5 class="mb-4 d-inline" data-i18n="number-of-lessons"></h5>- <h5 class="d-inline-block" id="numberOfLessons"></h5></div>
 
                         <div class="form-floating mb-4 mt-3">
-                            <input type="number" id="payment" name="payment" class="form-control" required/>
+                            <input type="number" id="payment" pattern="[0-9]*" name="payment" class="form-control" required/>
                             <label class="form-label" for="payment" data-i18n="payment"></label>
                         </div>
 
@@ -57,7 +57,7 @@
             document.getElementById('numberOfLessons').innerText = numberOfLessons
 
         } catch (error) {
-            console.error("Error fetching students:", error)
+            console.error('Internal server error')
         }
     })
 </script>

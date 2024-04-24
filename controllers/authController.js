@@ -65,12 +65,11 @@ exports.login = async (req, res) => {
 
         return res.json({message: "Incorrect username or password"})
     } catch (err) {
-        console.log(err)
-        return res.status(500).json({message: "Internal server error"})
+        res.status(500).json({message: "Internal server error"})
     }
 }
 function handleLoginSuccess(res, token, role, userId) {
-    res.cookie(role, token, {maxAge: process.env.TOKEN_EXPIRE * 100000})
+    res.cookie(role, token, {maxAge: process.env.TOKEN_EXPIRE * 1000, httpOnly: true, secure: true, sameSite: 'Strict'})
     res.header('Authorization', `Bearer ${token}`)
 
     res.redirect(`/profile/${role}/${userId}`)
@@ -85,7 +84,7 @@ exports.logout = async (req, res) => {
 
         res.redirect('/')
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 

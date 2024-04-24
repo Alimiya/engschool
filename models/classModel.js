@@ -16,8 +16,7 @@ async function getClassByName(name) {
         const classInfo = await Class.findOne({ name });
         return classInfo;
     } catch (error) {
-        console.error('Error finding class by name:', error);
-        throw error;
+        console.error('Internal server error')
     }
 }
 

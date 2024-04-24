@@ -23,7 +23,7 @@ router.get('/profile/teacher/:id/class/add/students', verifyTeacherToken(TEACHER
 router.get('/profile/teacher/:id/class/add/schedule', verifyTeacherToken(TEACHER_TOKEN_SECRET),Controller.createClassSchedule)
 router.get('/profile/teacher/:id/class/add/lessons', verifyTeacherToken(TEACHER_TOKEN_SECRET),Controller.addLessons)
 router.get('/profile/teacher/:id/class/update/lessons', verifyTeacherToken(TEACHER_TOKEN_SECRET),Controller.updateLessons)
-router.get('/profile/teacher/class/add/lesson/:selectedClassId/:selectedYear/:selectedMonth/:day', verifyTeacherToken(TEACHER_TOKEN_SECRET),Controller.getAttendance)
-router.get('/profile/teacher/class/update/lesson/:selectedClassId/:selectedYear/:selectedMonth/:day', verifyTeacherToken(TEACHER_TOKEN_SECRET),Controller.updateAttendance)
+router.get('/profile/teacher/:id/class/add/lesson/:selectedClassId/:selectedYear/:selectedMonth/:day', verifyTeacherToken(TEACHER_TOKEN_SECRET),Controller.getAttendance)
+router.get('/profile/teacher/:id/class/update/lesson/:selectedClassId/:selectedYear/:selectedMonth/:day', verifyTeacherToken(TEACHER_TOKEN_SECRET),Controller.updateAttendance)
 
 module.exports = router

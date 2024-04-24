@@ -52,10 +52,9 @@
     async function getClasses() {
         try {
             const response = await axios.get('https://sch-eng.live/api/teacher/classes')
-            return response.data.classes
+            return response.data
         } catch (error) {
-            console.error('Error fetching classes:', error)
-            return []
+            console.error('Internal server error')
         }
     }
 
@@ -102,7 +101,7 @@
             updateCalendar()
 
         } catch (error) {
-            console.error('Error initializing page:', error)
+            console.error('Internal server error')
         }
     })
 
@@ -124,7 +123,7 @@
 
             renderCalendar(calendarData)
         } catch (error) {
-            console.error('Error fetching class schedule:', error)
+            console.error('Internal server error')
         }
     }
 

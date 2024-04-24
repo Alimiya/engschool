@@ -16,7 +16,7 @@ exports.getTeacherById = async (req, res) => {
             })
         res.json({teacher})
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -34,7 +34,7 @@ exports.createStudent = async (req, res) => {
         await newUser.save()
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -46,7 +46,19 @@ exports.getStudents = async (req, res) => {
         const students = await Student.find({ class: { $in: classIds } })
         res.json(students)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
+    }
+}
+
+exports.getAddedStudents = async (req, res) => {
+    const teacherId = req.user._id
+    try {
+        const classes = await Class.find({ teacher: teacherId })
+        const classIds = classes.map(cls => cls._id)
+        const students = await Student.find({ status:'added', class:{$exists:false} })
+        res.json(students)
+    } catch (err) {
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -57,7 +69,7 @@ exports.getStudentById = async (req, res) => {
         const student = await Student.findById(studentId)
         res.json({student})
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -90,7 +102,7 @@ exports.createClass = async (req, res) => {
 
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -100,7 +112,7 @@ exports.getClasses = async (req, res) => {
         const classes = await Class.find({teacher:teacherId}).populate('schedule')
         res.json(classes)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -111,7 +123,7 @@ exports.getClassById = async (req, res) => {
         const classInfo = await Class.findById(classId).populate('schedule')
         res.json({classInfo})
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -149,7 +161,7 @@ exports.addStudentsToClass = async (req, res) => {
         await Class.findByIdAndUpdate(classId, {$addToSet: {students: {$each: studentIds}}})
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -167,7 +179,7 @@ exports.getStudentsByClass = async (req, res) => {
         ])
         res.json(students)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -203,7 +215,7 @@ exports.changeStudentClass = async (req, res) => {
 
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.error(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 

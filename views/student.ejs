@@ -95,7 +95,7 @@
                 renderYearSelect(yearsAndMonths)
             })
             .catch(function (err) {
-                console.log(err)
+                console.error('Internal server error')
             })
     }
 
@@ -111,8 +111,7 @@
             const payment = Object.values(payments).find(payment => payment.year == parseInt(year) && payment.month == parseInt(month))
             return payment ? payment.payment : 0
         } catch (err) {
-            console.log(err)
-            return 0
+            console.error('Internal server error')
         }
     }
 
@@ -182,7 +181,7 @@
 
             })
             .catch(function (err) {
-                console.log(err)
+                console.error('Internal server error')
             })
     }
 

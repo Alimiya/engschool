@@ -17,7 +17,7 @@ exports.getManagerById = async (req, res) => {
         )
         res.json({manager})
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -41,7 +41,7 @@ exports.getClasses = async (req, res) => {
         ])
         res.json({classes})
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -70,7 +70,7 @@ exports.getClassById = async (req, res) => {
         ])
         res.json({classInfo})
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -91,6 +91,6 @@ exports.getStudentById = async (req, res) => {
 
         res.json(student)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }

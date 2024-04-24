@@ -15,9 +15,9 @@ exports.getStudentById = async (req, res) => {
             }
         ])
 
-        res.json({student})
+        res.json(student)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -48,6 +48,6 @@ exports.payDate = async (req, res) => {
 
         res.redirect(`/profile/manager/${managerId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }

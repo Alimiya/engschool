@@ -13,5 +13,5 @@ i18next.init({
         }
     }
 }, function (err) {
-    if (err) return console.error(err)
+    if (err) return console.error('Internal server error')
 })

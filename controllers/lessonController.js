@@ -60,7 +60,7 @@ exports.collectAttendance = async (req, res) => {
 
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -109,7 +109,7 @@ exports.updateAttendance = async (req, res) => {
 
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -120,7 +120,7 @@ exports.getLessonsByDay = async (req, res) => {
         const lesson = await Lesson.findOne({class: classId, year, month, day}).populate('students')
         res.json(lesson)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
