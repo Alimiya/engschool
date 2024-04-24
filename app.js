@@ -107,7 +107,6 @@ bot.on('message', async (msg) => {
                     await user.save()
                     return bot.sendMessage(chatId, `Добро пожаловать ${msg.from.first_name}!`)
                 } catch (err) {
-                    console.log(err)
                     return bot.sendMessage(chatId, "Ошибка входа")
                 }
             })
@@ -130,12 +129,12 @@ const start = async () => {
             .then(() => {
                 console.log("Database is connected")
             })
-            .catch((error) => console.log(error.message))
+            .catch((error) =>console.error('Internal server error'))
         app.listen(process.env.PORT, () => {
             console.log(`http://localhost:${process.env.PORT}`)
         })
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 

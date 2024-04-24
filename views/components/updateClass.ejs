@@ -37,20 +37,18 @@
     async function getClasses() {
         try {
             const response = await axios.get('https://sch-eng.live/api/teacher/classes')
-            return response.data.classes
+            return response.data
         } catch (error) {
-            console.error('Error fetching classes:', error)
-            return []
+            console.error('Internal server error')
         }
     }
 
     async function getStudents() {
         try {
-            const response = await axios.get('https://sch-eng.live/api/teacher/students')
-            return response.data.students
+            const response = await axios.get('https://sch-eng.live/api/teacher/students/added')
+            return response.data
         } catch (error) {
-            console.error('Error fetching students:', error)
-            return []
+            console.error('Internal server error')
         }
     }
 
@@ -75,7 +73,7 @@
             const students = await getStudents()
             populateDropdown(studentSelect, students)
         } catch (error) {
-            console.error('Error initializing page:', error)
+            console.error('Internal server error')
         }
     })
 </script>

@@ -6,8 +6,7 @@ async function fetchTranslations(language) {
         }
         return await response.json()
     } catch (error) {
-        console.error('Error fetching translations:', error)
-        return {}
+        console.error('Internal server error')
     }
 }
 
@@ -46,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setLanguage(savedLanguage)
     } catch (error) {
-        console.error('Error fetching translations:', error)
+        console.error('Internal server error')
     }
 })
 export default i18n

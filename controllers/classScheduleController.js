@@ -19,7 +19,7 @@ exports.selectLessonDays = async (req, res) => {
 
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -56,7 +56,7 @@ exports.createClassSchedule = async (req, res) => {
             res.redirect(`/profile/teacher/${teacherId}`)
         }
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -87,7 +87,7 @@ exports.getClassScheduleById = async (req, res) => {
         })
         res.json(scheduleWithWeekdays)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -106,7 +106,7 @@ exports.getCurrentSchedule = async (req, res) => {
         ])
         res.json(schedule)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
 
@@ -135,6 +135,6 @@ exports.updateLessonDays = async (req, res) => {
 
         res.redirect(`/profile/teacher/${teacherId}`)
     } catch (err) {
-        console.log(err)
+        res.status(500).json({message: "Internal server error"})
     }
 }
